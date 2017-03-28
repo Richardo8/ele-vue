@@ -3,7 +3,7 @@
 </template>
 
 <script>
-  import {getStoreList} from '../../../src/service/getData'
+  import {getStoreList} from '@/service/getData'
 
   export default {
       data(){
