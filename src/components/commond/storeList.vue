@@ -1,5 +1,13 @@
 <template>
-  <div></div>
+  <div>
+    <ul>
+      <li v-for="item in shopListArr">
+        <a>{{item.id}}</a>
+        <a>{{item.name}}</a>
+        <a>{{item.phone}}</a>
+      </li>
+    </ul>
+  </div>
 </template>
 
 <script>
