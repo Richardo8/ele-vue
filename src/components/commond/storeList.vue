@@ -3,7 +3,7 @@
     <ul>
       <li v-for="item in shopListArr" class="shop_li">
         <section>
-          <img src="" class="shop_img">
+          <img :src="getPicUrl(item.image_path)" class="shop_img">
         </section>
         <hgroup class="shop_right">
           <header class="shop_detail_header">
@@ -50,6 +50,7 @@
 
 <script>
   import {getStoreList} from '@/service/getData'
+  import {getPicUrl} from '@/components/commond/mixins'
 
   export default {
       data(){
@@ -61,6 +62,7 @@
       mounted(){
           this.initData()
       },
+      mixins: [getPicUrl],
       methods:{
           async initData(){
               let res = await getStoreList('39.996369', '116.500778', this.offset);
