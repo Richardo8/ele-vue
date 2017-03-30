@@ -1,6 +1,6 @@
 <template>
   <div class="shopList_container">
-    <ul>
+    <ul v-load-more="loadMoreRes">
       <li v-for="item in shopListArr" class="shop_li">
         <section>
           <img :src="getPicUrl(item.image_path)" class="shop_img">
@@ -45,28 +45,44 @@
         </hgroup>
       </li>
     </ul>
+    <footer class="loader_more" v-show="preventRepeatRequest">正在加载更多商家</footer>
   </div>
 </template>
 
 <script>
   import {getStoreList} from '@/service/getData'
-  import {getPicUrl} from '@/components/commond/mixins'
+  import {getPicUrl, loadMore} from './mixins'
 
   export default {
       data(){
           return {
             offset: 0,
-            shopListArr:[]
+            shopListArr:[],
+            preventRepeatRequest: false
           }
       },
       mounted(){
           this.initData()
       },
-      mixins: [getPicUrl],
+      mixins: [getPicUrl, loadMore],
       methods:{
           async initData(){
               let res = await getStoreList('39.996369', '116.500778', this.offset);
               this.shopListArr = [...res]
+          },
+          async loadMoreRes(){
+              if(this.preventRepeatRequest){
+                  return false;
+              }
+              this.preventRepeatRequest = true;
+
+              this.offset += 20;
+              let res = await getStoreList('39.996369', '116.500778', this.offset);
+              this.shopListArr = [...this.shopListArr, ...res];
+              if(res.length < 20){
+                  return
+              }
+              this.preventRepeatRequest = false;
           }
       }
   }
@@ -179,5 +195,10 @@
         }
       }
     }
+  }
+  .loader_more{
+    @include font(0.6rem, 3);
+    text-align: center;
+    color: #999;
   }
 </style>
