@@ -1,6 +1,6 @@
 <template>
   <div class="shopList_container">
-    <ul v-load-more="loadMoreRes">
+    <ul v-load-more="loadMoreRes" v-loading.fullscreen.lock="isLoading" element-loading-text="拼命加载中">
       <li v-for="item in shopListArr" class="shop_li">
         <section>
           <img :src="getPicUrl(item.image_path)" class="shop_img">
@@ -58,7 +58,8 @@
           return {
             offset: 0,
             shopListArr:[],
-            preventRepeatRequest: false
+            preventRepeatRequest: false,
+            isLoading: true
           }
       },
       mounted(){
@@ -68,17 +69,20 @@
       methods:{
           async initData(){
               let res = await getStoreList('39.996369', '116.500778', this.offset);
-              this.shopListArr = [...res]
+              this.shopListArr = [...res];
+              this.isLoading = false;
           },
           async loadMoreRes(){
               if(this.preventRepeatRequest){
                   return false;
               }
               this.preventRepeatRequest = true;
+              this.isLoading = true;
 
               this.offset += 20;
               let res = await getStoreList('39.996369', '116.500778', this.offset);
               this.shopListArr = [...this.shopListArr, ...res];
+              this.isLoading = false;
               if(res.length < 20){
                   return
               }
