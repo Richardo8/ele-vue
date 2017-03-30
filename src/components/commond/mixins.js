@@ -23,7 +23,6 @@
       directives: {
           'load-more': {
               bind: (el, binding) => {
-                  console.log(el)
                   let windowHeight = window.screen.height;
                   let heightEl = el;
                   let scrollEl = document.body;

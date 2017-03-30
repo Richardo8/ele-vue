@@ -57,6 +57,8 @@
 <script>
   import {getStoreList} from '@/service/getData'
   import {getPicUrl, loadMore} from './mixins'
+  import {showBack, animate} from '@/config/mutils';
+
 
   export default {
       data(){
@@ -77,6 +79,9 @@
               let res = await getStoreList('39.996369', '116.500778', this.offset);
               this.shopListArr = [...res];
               this.isLoading = false;
+              showBack(status => {
+                  this.showBackTop = status;
+              })
           },
           async loadMoreRes(){
               if(this.preventRepeatRequest){
@@ -95,7 +100,7 @@
               this.preventRepeatRequest = false;
           },
           backTop(){
-              animate(document.body, {scroll: '0'}, 400, 'ease-out')
+              animate(document.body, {scrollTop: '0'}, 400, 'ease-out')
           }
       }
   }
@@ -213,5 +218,13 @@
     @include font(0.6rem, 3);
     text-align: center;
     color: #999;
+  }
+  .return_top{
+    position: fixed;
+    bottom: 3rem;
+    right: 1rem;
+    .back_top_svg{
+      @include wh(2rem, 2rem);
+    }
   }
 </style>
