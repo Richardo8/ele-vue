@@ -7,7 +7,7 @@
         </section>
         <hgroup class="shop_right">
           <header class="shop_detail_header">
-            <h4 class="shop_title">{{item.name}}</h4>
+            <h4 :class="item.is_premium ? 'premium' : ''" class="shop_title ellipsis">{{item.name}}</h4>
             <ul class="shop_detail_ul">
               <li v-for="item in item.supports" class="supports">
                 {{item.icon_name}}
@@ -45,6 +45,11 @@
         </hgroup>
       </li>
     </ul>
+    <aside class="return_top" @click="backTop" v-if="showBackTop">
+      <svg class="back_top_svg">
+        <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#backtop"></use>
+      </svg>
+    </aside>
     <footer class="loader_more" v-show="preventRepeatRequest">正在加载更多商家</footer>
   </div>
 </template>
@@ -59,7 +64,8 @@
             offset: 0,
             shopListArr:[],
             preventRepeatRequest: false,
-            isLoading: true
+            isLoading: true,
+            showBackTop: false
           }
       },
       mounted(){
@@ -87,6 +93,9 @@
                   return
               }
               this.preventRepeatRequest = false;
+          },
+          backTop(){
+              animate(document.body, {scroll: '0'}, 400, 'ease-out')
           }
       }
   }
