@@ -1,19 +1,64 @@
 <template>
-  <div class="shop_list_container">
-    <header class="shop_header">
-      <svg class="shop_icon">
-        <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#shop"></use>
-      </svg>
-      <span class="shop_header_title">附近商家</span>
-    </header>
-    <shop-list></shop-list>
+  <div>
+    <span class="title_text ellipsis">{{msiteTitle}}</span>
+    <nav class="msite_nav">
+      <div class="swiper-container">
+        <div class="swiper-wrapper">
+          <div class="swiper-slide food_types_container" v-for="(item, index) in foodTypes">
+            <a v-for="fooItem in item" class="link_to_food" v-if="foodItem.title !== '预定早餐'">
+              <figure>
+                <img :src="imgBaseUrl + fooItem.image_url">
+                <figcaption>{{foodItem.title}}</figcaption>
+              </figure>
+            </a>
+          </div>
+        </div>
+      </div>
+    </nav>
+    <div class="shop_list_container">
+      <header class="shop_header">
+        <svg class="shop_icon">
+          <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#shop"></use>
+        </svg>
+        <span class="shop_header_title ellipsis">附近商家</span>
+      </header>
+      <shop-list></shop-list>
+    </div>
   </div>
 </template>
 
 <script>
   import shopList from '@/components/commond/storeList';
+  import {msiteAdress, getFoodTypes} from '@/service/getData';
+  import {imgBaseUrl} from '@/config/commonparams/commonData';
+  import swiper from '@/plugins/swiper.min.js';
+  require('@/style/swiper.min.css');
 
   export default {
+      data(){
+          return {
+              geohash: 'wx4g6zgvbmc',
+              msiteTitle: '',
+              foodTypes: [],
+              imgBaseUrl
+          }
+      },
+      async beforeMount(){
+          let res = await msiteAdress(this.geohash);
+          this.msiteTitle = res.name;
+      },
+      async mounted(){
+         let res = await getFoodTypes(this.geohash);
+         this.foodTypes = [...res];
+        let mySwiper = new Swiper('.swiper-container', {
+          direction: 'horizontal',
+          loop: true,
+          pagination: '.swiper-pagination',
+          nextButton: '.swiper-button-next',
+          prevButton: '.swiper-button-prev'
+        })
+        console.log(mySwiper)
+      },
       components: {
           shopList
       }
