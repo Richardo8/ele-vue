@@ -32,6 +32,22 @@ module.exports = {
         target: 'https://mainsite-restapi.ele.me',
         changeOrigin: true
       },
+      '/v1': {
+        target: 'https://mainsite-restapi.ele.me',
+        changeOrigin: true
+      },
+      '/v2': {
+        target: 'https://mainsite-restapi.ele.me',
+        changeOrigin: true
+      },
+      '/v3': {
+        target: 'https://mainsite-restapi.ele.me',
+        changeOrigin: true
+      },
+      '/v4': {
+        target: 'https://mainsite-restapi.ele.me',
+        changeOrigin: true
+      },
     },
     // CSS Sourcemaps off by default because relative paths are "buggy"
     // with this option, according to the CSS-Loader README

@@ -12,8 +12,7 @@ let montageURL = function (url, data) {
   return url;
 }
 
-async function dataJson(data) {
-  let url = '/shopping/restaurants';
+async function dataJson(url, data) {
   let new_url  = montageURL(url, data)
   let res = await fetch(new_url);
   return await res.json();
@@ -38,7 +37,23 @@ let getStoreList = (latitude, longitude, offset, restaurant_category_id = '', re
     order_by,
     'delivery_mode[]': delivery_mode + supportStr
   };
-  return dataJson(data)
+  let url = '/shopping/restaurants';
+  return dataJson(url, data)
 };
 
-export {getStoreList}
+async function msiteAdress(geohash) {
+  let res = await fetch('/v2/pois/' + geohash)
+  return res.json();
+}
+
+let getFoodTypes = (geohash) => {
+  let data = {
+    geohash,
+    group_type: '1',
+    'flags[]': 'F'
+  }
+  let url = '/v2/index_entry';
+  return dataJson(url, data);
+}
+
+export {getStoreList, msiteAdress, getFoodTypes}

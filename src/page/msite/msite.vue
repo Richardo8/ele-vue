@@ -31,8 +31,6 @@
   import shopList from '@/components/commond/storeList';
   import {msiteAdress, getFoodTypes} from '@/service/getData';
   import {imgBaseUrl} from '@/config/commonparams/commonData';
-  import swiper from '@/plugins/swiper.min.js';
-  require('@/style/swiper.min.css');
 
   export default {
       data(){
@@ -50,14 +48,6 @@
       async mounted(){
          let res = await getFoodTypes(this.geohash);
          this.foodTypes = [...res];
-        let mySwiper = new Swiper('.swiper-container', {
-          direction: 'horizontal',
-          loop: true,
-          pagination: '.swiper-pagination',
-          nextButton: '.swiper-button-next',
-          prevButton: '.swiper-button-prev'
-        })
-        console.log(mySwiper)
       },
       components: {
           shopList
