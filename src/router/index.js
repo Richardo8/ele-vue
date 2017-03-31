@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Hello from '@/components/Hello'
 import storeList from '@/components/commond/storeList'
+import msite from '@/page/msite/msite'
 
 
 Vue.use(Router)
@@ -12,15 +12,15 @@ export default new Router({
   routes: [
     {
       path: '/',
-      component: storeList
+      component: msite
     },
     {
-      path: 'storelist',
-      component: storeList
+      path: 'msite',
+      component: msite
     },
     {
       path: '*',
-      component: storeList
+      component: msite
     }
   ]
 })
