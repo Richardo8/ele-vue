@@ -28,8 +28,8 @@
               </figure>
             </a>
           </div>
-          <div class="swiper-pagination"></div>
         </div>
+        <div class="swiper-pagination"></div>
       </div>
     </nav>
     <div class="shop_list_container">
@@ -65,23 +65,28 @@
           let res = await msiteAdress(this.geohash);
           this.msiteTitle = res.name;
       },
-      async mounted(){
-         let res = await getFoodTypes(this.geohash);
-         let resLength = res.length;
-         let resArr = res.concat([]);
-         let foodArr = [];
-         for(let i = 0, j = 0; i < resLength; i += 8, j++){
-             foodArr[j] = resArr.splice(0, 8);
-         }
-         this.foodTypes = foodArr;
-         let myswiper = new Swiper('.swiper-container', {
-           pagination: '.swiper-pagination',
-           loop: true
-         })
+      mounted(){
+        getFoodTypes(this.geohash).then(res => {
+          let resLength = res.length;
+          let resArr = res.concat([]);
+          let foodArr = [];
+          for(let i = 0, j = 0; i < resLength; i += 8, j++){
+            foodArr[j] = resArr.splice(0, 8);
+          }
+          this.foodTypes = foodArr;
+        }).then(() =>{
+          new Swiper('.swiper-container', {
+            pagination: '.swiper-pagination',
+            loop: true,
+          })
+        })
       },
       components: {
           headTop,
           shopList
+      },
+      methods: {
+
       }
   }
 </script>
