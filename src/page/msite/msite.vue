@@ -41,6 +41,7 @@
       </header>
       <shop-list></shop-list>
     </div>
+    <foot-guide></foot-guide>
   </div>
 </template>
 
@@ -49,6 +50,7 @@
   import {msiteAdress, getFoodTypes} from '@/service/getData';
   import {imgBaseUrl} from '@/config/commonparams/commonData';
   import headTop from '@/components/header/header';
+  import footGuide from '@/components/footer/footer';
   import '@/plugins/swiper.min.js';
   import '@/plugins/swiper.min.css';
 
@@ -83,7 +85,8 @@
       },
       components: {
           headTop,
-          shopList
+          shopList,
+          footGuide,
       },
       methods: {
 
