@@ -5,6 +5,7 @@ import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-default/index.css'
 import App from './App'
 import routes from './router/index'
+import './config/rem'
 
 Vue.use(ElementUI);
 
