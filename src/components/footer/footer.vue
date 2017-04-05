@@ -65,7 +65,9 @@
 
     },
     methods: {
-
+      gotoAddress(path){
+          this.$router.push(path);
+      }
     },
 
   }
