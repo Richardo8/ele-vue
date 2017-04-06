@@ -1,9 +1,9 @@
 <template>
   <header id="head_top">
     <slot name="search"></slot>
-    <router-link class="head_login">
+    <div class="head_login">
       <span class="login_span">登录|注册</span>
-    </router-link>
+    </div>
     <!--<section class="title_head ellipsis">-->
       <!--<span class="title_text">{{headTitle}}</span>-->
     <!--</section>-->
