@@ -56,4 +56,14 @@ let getFoodTypes = (geohash) => {
   return dataJson(url, data);
 }
 
-export {getStoreList, msiteAdress, getFoodTypes}
+let getShopDetails = (shopId, latitude, longitude) => {
+  let data = {
+    shopId,
+    latitude,
+    longitude
+  }
+  let url = '/shopping/restaurant/';
+  return dataJson(url, data);
+}
+
+export {getStoreList, msiteAdress, getFoodTypes, getShopDetails}
