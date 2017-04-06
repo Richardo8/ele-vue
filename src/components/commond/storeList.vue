@@ -1,7 +1,7 @@
 <template>
   <div class="shopList_container">
     <ul v-load-more="loadMoreRes" v-loading.fullscreen.lock="isLoading" element-loading-text="拼命加载中">
-      <li v-for="item in shopListArr" class="shop_li">
+      <router-link :to="{path: 'shop', query:{geohash, id: item.id}}" v-for="item in shopListArr" tag="li" :key="item.id" class="shop_li">
         <section>
           <img :src="getPicUrl(item.image_path)" class="shop_img">
         </section>
@@ -43,7 +43,7 @@
             </section>
           </h5>
         </hgroup>
-      </li>
+      </router-link>
     </ul>
     <aside class="return_top" @click="backTop" v-if="showBackTop">
       <svg class="back_top_svg">
@@ -74,6 +74,7 @@
           this.initData()
       },
       mixins: [getPicUrl, loadMore],
+      props:['geohash'],
       methods:{
           async initData(){
               let res = await getStoreList('39.996369', '116.500778', this.offset);

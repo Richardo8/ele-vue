@@ -39,7 +39,7 @@
         </svg>
         <span class="shop_header_title ellipsis">附近商家</span>
       </header>
-      <shop-list></shop-list>
+      <shop-list :geohash="geohash"></shop-list>
     </div>
     <foot-guide></foot-guide>
   </div>
