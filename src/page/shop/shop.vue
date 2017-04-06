@@ -17,8 +17,8 @@ export default {
         }
     },
     created(){
-        this.geohash = this.$router.query.geohash;
-        this.shopId = this.$router.query.id;
+        this.geohash = this.$route.query.geohash;
+        this.shopId = this.$route.query.id;
 
     },
     mounted(){
