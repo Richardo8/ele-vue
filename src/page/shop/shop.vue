@@ -24,6 +24,11 @@ export default {
     mounted(){
         this.initData()
     },
+    computed: {
+      ...mapState([
+          'latitude', 'longitude'
+      ])
+    },
     methods: {
         ...mapMutations([
             'RECORD_ADDRESS'
@@ -31,10 +36,9 @@ export default {
         async initData(){
             if(!this.latitued){
                 let res = await msiteAdress(this.geohash)
-                console.log(res);
                 this.RECORD_ADDRESS(res);
             }
-            this.shopDetailData = await getShopDetails(this.shopId)
+            this.shopDetailData = await getShopDetails(this.shopId, this.latitude, this.longitude)
         }
     }
 }
