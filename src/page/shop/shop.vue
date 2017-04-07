@@ -101,6 +101,7 @@
 import {mapState, mapMutations} from 'vuex'
 import {getPicUrl} from '@/components/commond/mixins'
 import {msiteAdress, getShopDetails, getFoodList} from '@/service/getData'
+import BScroll from 'better-scroll'
 
 export default {
     data(){
