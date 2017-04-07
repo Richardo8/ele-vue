@@ -4,6 +4,7 @@ import Vue from 'vue'
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-default/index.css'
 import App from './App'
+import store from './store/'
 import routes from './router/index'
 import './config/rem'
 
@@ -14,5 +15,6 @@ Vue.config.productionTip = false
 /* eslint-disable no-new */
 const app = new Vue({
   router: routes,
+  store,
   render: h => h(App)
 }).$mount('#app')
