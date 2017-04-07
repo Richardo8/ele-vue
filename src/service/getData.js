@@ -58,11 +58,10 @@ let getFoodTypes = (geohash) => {
 
 let getShopDetails = (shopId, latitude, longitude) => {
   let data = {
-    shopId,
     latitude,
-    longitude
+    longitude: longitude + '&extras[]=activities&extras[]=album&extras[]=license&extras[]=identification&extras[]=statistics'
   }
-  let url = '/shopping/restaurant/';
+  let url = '/shopping/restaurant/' + shopId;
   return dataJson(url, data);
 }
 
