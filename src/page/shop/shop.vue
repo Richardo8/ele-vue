@@ -48,6 +48,48 @@
                 </li>
               </ul>
             </section>
+            <section class="menu_right" ref="menuFoodList">
+              <ul>
+                <li v-for="(item, index) in foodList" :key="index">
+                  <header class="menu_detail_header">
+                    <section class="menu_detail_header_left">
+                      <strong class="menu_item_title">{{item.name}}</strong>
+                      <span class="menu_item_description">{{item.description}}</span>
+                    </section>
+                    <span class="menu_detail_header_right"></span>
+                    <p v-if="index == TitleDetailIndex" class="description_tip">
+                      <span>{{item.name}}</span>
+                      {{item.description}}
+                    </p>
+                  </header>
+                  <section v-for="(foods, foodIndex) in item.foods" :key="foodIndex" class="menu_detail_list">
+                    <router-link to="{path: 'shop/foodDetail', query:{image_path:foods.image_path, description: foods.description, month_sales: foods.month_sales, name: foods.name, rating: foods.rating, rating_count: foods.rating_count, satisfy_rate: foods.satisfy_rate, foods, shopId}}" tag="div" class="menu_detail_link">
+                      <section class="menu_food_img">
+                        <img :src="getPicUrl(foods.image_path)">
+                      </section>
+                      <section class="menu_food_description">
+                        <h3 class="food_description_head">
+                          <strong class="description_foodname">{{foods.name}}</strong>
+                          <ul v-if="foods.attributes.length" class="attributes_ul">
+                            <li v-for="(attribute, foodindex) in foods.attributes" :key="foodindex" :style="{color: '#' + attribute.icon_color,borderColor:'#' +attribute.icon_color}" :class="{attribute_new: attribute.icon_name == '新'}">
+                              <p :style="{color: attribute.icon_name == '新'? '#fff' : '#' + attribute.icon_color}">{{attribute.icon_name == '新'? '新品':attribute.icon_name}}</p>
+                            </li>
+                          </ul>
+                        </h3>
+                        <p class="food_description_content">{{foods.description}}</p>
+                        <p class="food_description_sale_rating">
+                          <span>月售{{foods.month_sales}}份</span>
+                          <span>好评率{{foods.satisfy_rate}}份</span>
+                        </p>
+                        <p v-if="foods.activity" class="food_activity">
+                          <span :style="{color: '#' + foods.activity.image_text_color,borderColor:'#' +foods.activity.icon_color}">{{foods.activity.image_text}}</span>
+                        </p>
+                      </section>
+                    </router-link>
+                  </section>
+                </li>
+              </ul>
+            </section>
           </section>
         </section>
       </transition>
@@ -70,7 +112,8 @@ export default {
             thisTab: 'food',
             foodList: null,
             ratingList: null,
-            menuIndex: 0
+            menuIndex: 0,
+            TitleDetailIndex: null
         }
     },
     created(){
@@ -266,6 +309,172 @@ export default {
         background-color: #fff;
         span:nth-of-type(1){
           font-weight: bold;
+        }
+      }
+    }
+    .menu_right{
+      flex: 4;
+      overflow-y: auto;
+      .menu_detail_header{
+        width: 100%;
+        padding: .4rem;
+        position: relative;
+        @include fj;
+        align-items: center;
+        .menu_detail_header_left{
+          width: 11rem;
+          white-space: nowrap;
+          overflow: hidden;
+          .menu_item_title{
+            @include sc(0.7rem, #666);
+            font-weight: bold;
+          }
+          .menu_item_description{
+            @include sc(0.5rem, #999);
+            width: 30%;
+            overflow: hidden;
+          }
+        }
+        .menu_detail_header_right{
+          @include wh(.5rem, 1rem);
+          display: block;
+          @include bis('../../images/icon_point.png');
+          background-size: 100% .4rem;
+          background-position: left center;
+        }
+        .description_tip{
+          background-color: #39373a;
+          opacity: 0.95;
+          @include sc(.5rem, #fff);
+          position: absolute;
+          top: 1.5rem;
+          z-index: 14;
+          width: 8rem;
+          right: .2rem;
+          padding: .5rem .4rem;
+          border: 1px;
+          border-radius: .2rem;
+          span{
+            color: #fff;
+            line-height: .6rem;
+            font-size: .55rem;
+          }
+        }
+        .description_tip::after{
+          content: '';
+          position: absolute;
+          @include wh(.4rem, .4rem);
+          background-color: #39373a;
+          top: -.5rem;
+          right: .7rem;
+          transform: rotate(-45deg) translateY(.41rem);
+        }
+      }
+      .menu_detail_list{
+        background-color: #fff;
+        padding: .6rem .4rem;
+        border-bottom: 1px solid #f8f8f8;
+        position: relative;
+        overflow: hidden;
+        .menu_detail_link{
+          display:flex;
+          .menu_food_img{
+            margin-right: .4rem;
+            img{
+              @include wh(2rem, 2rem);
+              display: block;
+            }
+          }
+          .menu_food_description{
+            width: 100%;
+            .food_description_head{
+              @include fj;
+              margin-bottom: .2rem;
+              .description_foodname{
+                @include sc(.7rem, #333);
+              }
+              .attributes_ul{
+                display: flex;
+                li{
+                  font-size: .3rem;
+                  height: .6rem;
+                  line-height: .35rem;
+                  padding: .1rem;
+                  border: 1px solid #666;
+                  border-radius: 0.3rem;
+                  margin-right: .1rem;
+                  transform: scale(.8);
+                  p{
+                    white-space: nowrap;
+                    line-height: .4rem;
+                  }
+                }
+                .attribute_new{
+                  position: absolute;
+                  top: 0;
+                  left: 0;
+                  background-color: #4cd964;
+                  @include wh(2rem, 2rem);
+                  display: flex;
+                  align-items: flex-end;
+                  transform: rotate(-45deg) translate(-.1rem, -1.5rem);
+                  border: none;
+                  border-radius: 0;
+                  p{
+                    @include sc(.4rem, #fff);
+                    text-align: center;
+                    flex: 1;
+                  }
+                }
+              }
+            }
+            .food_description_content{
+              @include sc(.5rem, #999);
+              line-height: .6rem;
+            }
+            .food_description_sale_rating{
+              line-height: .8rem;
+              span{
+                @include sc(.5rem, #333);
+              }
+            }
+            .food_activity{
+              line-height: .4rem;
+              span{
+                font-size: .3rem;
+                border: 1px solid currentColor;
+                border-radius: 0.3rem;
+                padding: .08rem;
+                display: inline-block;
+                transform: scale(.8);
+                margin-left: -0.35rem;
+
+              }
+            }
+          }
+        }
+        .menu_detail_footer{
+          margin-left: 2.4rem;
+          font-size: 0;
+          margin-top: .3rem;
+          @include fj;
+          .food_price{
+            span{
+              font-family: 'Helvetica Neue',Tahoma,Arial;
+            }
+            span:nth-of-type(1){
+              @include sc(.5rem, #f60);
+              margin-right: .05rem;
+            }
+            span:nth-of-type(2){
+              @include sc(.7rem, #f60);
+              font-weight: bold;
+              margin-right: .3rem;
+            }
+            span:nth-of-type(3){
+              @include sc(.5rem, #666);
+            }
+          }
         }
       }
     }

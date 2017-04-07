@@ -2,6 +2,13 @@ $blue: #3190e8;
 $bc: #e4e4e4;
 $fc: #fff;
 
+
+@mixin bis($url) {
+  background-image: url($url);
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+}
+
 @mixin wh($width, $height){
   width: $width;
   height: $height;
