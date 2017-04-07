@@ -37,6 +37,20 @@
           <span :class="{activity_show: thisTab == 'rating'}">评价</span>
         </div>
       </section>
+      <transition name="fade-choose">
+        <section v-show="thisTab == 'food'" class="food_container">
+          <section class="menu_container">
+            <section class="menu_left" id="wrapper_menu">
+              <ul>
+                <li v-for="(item, index) in foodList" :key="index" class="menu_left_li" :class="{activity_menu: index == menuIndex}">
+                  <img :src="getPicUrl(item.icon_url)" v-if="item.icon_url">
+                  <span>{{item.name}}</span>
+                </li>
+              </ul>
+            </section>
+          </section>
+        </section>
+      </transition>
     </section>
   </div>
 </template>
@@ -44,7 +58,7 @@
 <script>
 import {mapState, mapMutations} from 'vuex'
 import {getPicUrl} from '@/components/commond/mixins'
-import {msiteAdress, getShopDetails} from '@/service/getData'
+import {msiteAdress, getShopDetails, getFoodList} from '@/service/getData'
 
 export default {
     data(){
@@ -53,7 +67,10 @@ export default {
             shopId: null,
             shopDetailData: null,
             isLoading: true,
-            thisTab: 'food'
+            thisTab: 'food',
+            foodList: null,
+            ratingList: null,
+            menuIndex: 0
         }
     },
     created(){
@@ -82,7 +99,8 @@ export default {
                 let res = await msiteAdress(this.geohash)
                 this.RECORD_ADDRESS(res);
             }
-            this.shopDetailData = await getShopDetails(this.shopId, this.latitude, this.longitude)
+            this.shopDetailData = await getShopDetails(this.shopId, this.latitude, this.longitude);
+            this.foodList = await getFoodList(this.shopId);
             this.isLoading = false;
         }
     }
@@ -181,7 +199,7 @@ export default {
       }
     }
   }
-  
+
   /*Tab*/
   .change_show_type{
     display: flex;
@@ -199,6 +217,56 @@ export default {
       .activity_show{
         color: #3190e8;
         border-color: #3190e8;
+      }
+    }
+  }
+
+  /*FoodList*/
+  .food_container{
+    display: flex;
+    flex: 1;
+    padding-bottom: 2rem;
+  }
+  .menu_container{
+    display: flex;
+    flex: 1;
+    overflow-y: hidden;
+    .menu_left{
+      background-color: #f8f8f8;
+      width: 3.8rem;
+      .menu_left_li{
+        padding: 0.7rem 0.3rem;
+        border-bottom: 0.025rem solid #ededed;
+        box-sizing: border-box;
+        border-left: 0.15rem solid #f8f8f8;
+        position: relative;
+        img{
+          @include wh(0.5rem, 0.6rem);
+        }
+        span{
+          @include sc(0.6rem, #666);
+        }
+        .category_num{
+          position: absolute;
+          top: 0.1rem;
+          right: 0.1rem;
+          background-color: #ff461d;
+          line-height: 0.6rem;
+          text-align: center;
+          border-radius: 50%;
+          border: 0.025rem solid #ff461d;
+          min-width: 0.6rem;
+          height: 0.6rem;
+          @include sc(0.5rem, #fff);
+          font-family: Helvetica Neue, Tahoma, Arial;
+        }
+      }
+      .activity_menu{
+        border-left: 0.15rem solid #3190e8;
+        background-color: #fff;
+        span:nth-of-type(1){
+          font-weight: bold;
+        }
       }
     }
   }

@@ -65,4 +65,12 @@ let getShopDetails = (shopId, latitude, longitude) => {
   return dataJson(url, data);
 }
 
-export {getStoreList, msiteAdress, getFoodTypes, getShopDetails}
+let getFoodList = (shopId) => {
+  let data = {
+    restaurant_id: shopId
+  };
+  let url = '/shopping/v2/menu';
+  return dataJson(url, data);
+}
+
+export {getStoreList, msiteAdress, getFoodTypes, getShopDetails, getFoodList}
