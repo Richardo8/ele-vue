@@ -17,7 +17,7 @@
               <path d="M0 0 L8 7 L0 14"  stroke="#fff" stroke-width="1" fill="none"/>
             </svg>
           </router-link>
-          <footer class="description_footer" v-if="shopDetailData.activities.length">
+          <footer class="description_footer" v-if="shopDetailData.activities.length" @click="showActivitiesFun">
             <p class="ellipsis">
               <span class="tip_icon" :style="{backgroundColor: '#' + shopDetailData.activities[0].icon_color, borderColor: '#' + shopDetailData.activities[0].icon_color}">{{shopDetailData.activities[0].icon_name}}</span>
               <span>{{shopDetailData.activities[0].description}}（APP专享）</span>
@@ -29,6 +29,36 @@
           </footer>
         </section>
       </header>
+      <transition name="fade">
+        <section class="activities_details" v-if="showActivities">
+          <h2 class="activities_shoptitle">{{shopDetailData.name}}</h2>
+          <h3 class="activities_ratingstar">
+            <el-rate disabled v-model="shopDetailData.rating" text-color="#ff9900"></el-rate>
+          </h3>
+          <section class="activities_list">
+            <header class="activities_title_style">
+              <span>优惠信息</span>
+            </header>
+            <ul>
+              <li v-for="item in shopDetailData.activities" :key="item.id">
+                <span class="activites_icon" :style="{backgroundColor: '#' + item.icon_color, borderColor: '#' + item.icon_color}">
+                  {{item.icon_name}}
+                </span>
+                <span>{{item.description}}(APP专享)</span>
+              </li>
+            </ul>
+          </section>
+          <section class="activities_shopinfo">
+            <header class="activities_title_style"><span>商家公告</span></header>
+            <p>{{promotionInfo}}</p>
+          </section>
+          <svg width="60" height="60" class="close_activities" @click.stop="showActivitiesFun">
+            <circle cx="30" cy="30" r="25" stroke="#555" stroke-width="1" fill="none"/>
+            <line x1="22" y1="38" x2="38" y2="22" style="stroke:#999;stroke-width:2"/>
+            <line x1="22" y1="22" x2="38" y2="38" style="stroke:#999;stroke-width:2"/>
+          </svg>
+        </section>
+      </transition>
       <section class="change_show_type" ref="chooseType">
         <div>
           <span :class="{activity_show: thisTab == 'food'}">商品</span>
@@ -117,7 +147,8 @@ export default {
             TitleDetailIndex: null,
             foodScroll: null,
             shopListTop: [],
-            menuIndexChange: true
+            menuIndexChange: true,
+            showActivities: false
         }
     },
     created(){
@@ -197,6 +228,9 @@ export default {
             this.foodScroll.on('scrollEnd', () => {
                 this.menuIndexChange = true;
             })
+        },
+        showActivitiesFun(){
+            this.showActivities = !this.showActivities;
         }
     }
 }
@@ -292,6 +326,68 @@ export default {
           right: 0.3rem;
         }
       }
+    }
+  }
+
+  /*Fade*/
+  .activities_details{
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #262626;
+    z-index: 200;
+    padding: 1.25rem;
+    .activities_shoptitle{
+      text-align: center;
+      @include sc(.8rem, #fff);
+    }
+    .activities_ratingstar{
+      display: flex;
+      justify-content: center;
+      transform: scale(2.2);
+      margin-top: .7rem;
+    }
+    .activities_list{
+      margin-top: 1.5rem;
+      margin-bottom: 1rem;
+      @include sc(.5rem, #fff);
+      li{
+        margin-bottom: .2rem;
+        .activities_icon{
+          padding: 0 .02rem;
+          display: inline-block;
+          border: 0.025rem solid #fff;
+          border-radius: 0.1rem;
+        }
+        span{
+          color: #fff;
+          line-height: .6rem;
+        }
+      }
+    }
+    .activities_shopinfo{
+      p{
+        line-height: .7rem;
+        @include sc(.5rem, #fff);
+      }
+    }
+    .activities_title_style{
+      text-align: center;
+      margin-bottom: 1rem;
+      span{
+        @include sc(.5rem, #fff);
+        border: 0.025rem solid #555;
+        padding: .2rem .4rem;
+        border-radius: 0.5rem;
+      }
+
+    }
+    .close_activities{
+      position: absolute;
+      bottom: 1rem;
+      @include cl;
     }
   }
 

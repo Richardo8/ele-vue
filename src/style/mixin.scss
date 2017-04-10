@@ -9,6 +9,12 @@ $fc: #fff;
   background-size: 100% 100%;
 }
 
+@mixin cl {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
 @mixin wh($width, $height){
   width: $width;
   height: $height;
