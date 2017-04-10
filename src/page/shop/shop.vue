@@ -115,7 +115,9 @@ export default {
             ratingList: null,
             menuIndex: 0,
             TitleDetailIndex: null,
-            foodScroll: null
+            foodScroll: null,
+            shopListTop: [],
+            menuIndexChange: true
         }
     },
     created(){
@@ -161,19 +163,40 @@ export default {
             const baseHeight = this.$refs.shopHeader.clientHeight;
             const chooseTypeHeight = this.$refs.chooseType.clientHeight;
             const listContainer = this.$refs.menuFoodList;
-            console.log(listContainer);
             const listArr = Array.from(listContainer.children[0].children);
             listArr.forEach((item, index) => {
                 this.shopListTop[index] = item.offsetTop - baseHeight - chooseTypeHeight;
             })
-            console.log(listArr)
+            this.listenScroll(listContainer);
         },
         listenScroll(ele){
+            this.foodScroll =new BScroll(ele, {
+                probeType: 3,
+                deceleration: 0.001,
+                bounce: false,
+                swipeTime: 2000,
+                click: true,
+            })
 
+            this.wrapperMenu = new BScroll('#wrapper_menu', {
+                click: true,
+            })
+
+            this.foodScroll.on('scroll', (pos) => {
+                this.shopListTop.forEach((item, index) => {
+                    if(this.menuIndexChange && Math.abs(Math.round(pos.y)) >= item){
+                        this.menuIndex = index;
+                    }
+                })
+            })
         },
         chooseMenu(index){
             this.menuIndex = index;
-
+            this.menuIndexChang = false;
+            this.foodScroll.scrollTo(0, -this.shopListTop[index], 400);
+            this.foodScroll.on('scrollEnd', () => {
+                this.menuIndexChange = true;
+            })
         }
     }
 }
