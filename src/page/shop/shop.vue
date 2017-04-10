@@ -1,7 +1,7 @@
 <template>
   <div v-loading.fullscreen.lock="isLoading" element-loading-text="拼命加载中">
     <section class="shop_container" v-if="!isLoading">
-      <header class="shop_detail_header" >
+      <header ref="shopHeader" class="shop_detail_header" >
         <img :src="getPicUrl(shopDetailData.image_path)" class="header_cover_img">
         <section class="description_header">
           <router-link to="/shop/shopDetail" class="description_top">
@@ -29,7 +29,7 @@
           </footer>
         </section>
       </header>
-      <section class="change_show_type" >
+      <section class="change_show_type" ref="chooseType">
         <div>
           <span :class="{activity_show: thisTab == 'food'}">商品</span>
         </div>
@@ -42,7 +42,7 @@
           <section class="menu_container">
             <section class="menu_left" id="wrapper_menu">
               <ul>
-                <li v-for="(item, index) in foodList" :key="index" class="menu_left_li" :class="{activity_menu: index == menuIndex}">
+                <li v-for="(item, index) in foodList" :key="index" class="menu_left_li" :class="{activity_menu: index == menuIndex}" @click="chooseMenu(index)">
                   <img :src="getPicUrl(item.icon_url)" v-if="item.icon_url">
                   <span>{{item.name}}</span>
                 </li>
@@ -114,7 +114,8 @@ export default {
             foodList: null,
             ratingList: null,
             menuIndex: 0,
-            TitleDetailIndex: null
+            TitleDetailIndex: null,
+            foodScroll: null
         }
     },
     created(){
@@ -126,6 +127,15 @@ export default {
         this.initData()
     },
     mixins: [getPicUrl],
+    watch: {
+      isLoading: function (value) {
+        if(!value){
+          this.$nextTick(() => {
+              this.getFoodListHeight();
+          })
+        }
+      }
+    },
     computed: {
       ...mapState([
           'latitude', 'longitude'
@@ -146,6 +156,24 @@ export default {
             this.shopDetailData = await getShopDetails(this.shopId, this.latitude, this.longitude);
             this.foodList = await getFoodList(this.shopId);
             this.isLoading = false;
+        },
+        getFoodListHeight(){
+            const baseHeight = this.$refs.shopHeader.clientHeight;
+            const chooseTypeHeight = this.$refs.chooseType.clientHeight;
+            const listContainer = this.$refs.menuFoodList;
+            console.log(listContainer);
+            const listArr = Array.from(listContainer.children[0].children);
+            listArr.forEach((item, index) => {
+                this.shopListTop[index] = item.offsetTop - baseHeight - chooseTypeHeight;
+            })
+            console.log(listArr)
+        },
+        listenScroll(ele){
+
+        },
+        chooseMenu(index){
+            this.menuIndex = index;
+
         }
     }
 }
