@@ -73,4 +73,16 @@ let getFoodList = (shopId) => {
   return dataJson(url, data);
 }
 
-export {getStoreList, msiteAdress, getFoodTypes, getShopDetails, getFoodList}
+let getRatingList = (shopId, offset, tag_name = '') => {
+  let data = {
+    has_content: true,
+    offset,
+    limit: 10,
+    tag_name
+  }
+  let url = '/ugc/v2/restaurants/' + shopId + '/ratings'
+  console.log(montageURL(url, data));
+  return dataJson(url, data);
+}
+
+export {getStoreList, msiteAdress, getFoodTypes, getShopDetails, getFoodList, getRatingList}

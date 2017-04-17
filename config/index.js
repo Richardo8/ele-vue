@@ -48,6 +48,10 @@ module.exports = {
         target: 'https://mainsite-restapi.ele.me',
         changeOrigin: true
       },
+      '/ugc': {
+        target: 'https://mainsite-restapi.ele.me',
+        changeOrigin: true
+      },
     },
     // CSS Sourcemaps off by default because relative paths are "buggy"
     // with this option, according to the CSS-Loader README

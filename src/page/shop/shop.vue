@@ -123,6 +123,27 @@
           </section>
         </section>
       </transition>
+      <!--<transition name="fade-choose">
+        <section class="rating-container" id="ratingContainer" v-for="changeShowType == 'rating'">
+          <section>
+            <section>
+              <header class="rating_header">
+                <section class="rating_header_left">
+                  <p>{{shopDetailData.rating}}</p>
+                  <p>综合评价</p>
+                  <p>高于周边商家{{(ratingScoresData.compare_rating*100).toFixed(1)}}%</p>
+                </section>
+                <section class="rating_header_right">
+                  <p>
+                    <span>服务态度</span>
+                    <el-rate disabled text-color="#ff9900" v-model="ratingScoresData.service_sorce"></el-rate>
+                  </p>
+                </section>
+              </header>
+            </section>
+          </section>
+        </section>
+      </transition>-->
     </section>
   </div>
 </template>
@@ -130,7 +151,7 @@
 <script>
 import {mapState, mapMutations} from 'vuex'
 import {getPicUrl} from '@/components/commond/mixins'
-import {msiteAdress, getShopDetails, getFoodList} from '@/service/getData'
+import {msiteAdress, getShopDetails, getFoodList, getRatingList} from '@/service/getData'
 import BScroll from 'better-scroll'
 
 export default {
@@ -148,7 +169,8 @@ export default {
             foodScroll: null,
             shopListTop: [],
             menuIndexChange: true,
-            showActivities: false
+            showActivities: false,
+            ratingOffset: 0
         }
     },
     created(){
@@ -188,6 +210,8 @@ export default {
             }
             this.shopDetailData = await getShopDetails(this.shopId, this.latitude, this.longitude);
             this.foodList = await getFoodList(this.shopId);
+            this.ratingList = await getRatingList(this.shopId, this.ratingOffset);
+            console.log(this.ratingList)
             this.isLoading = false;
         },
         getFoodListHeight(){
