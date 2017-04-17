@@ -81,8 +81,18 @@ let getRatingList = (shopId, offset, tag_name = '') => {
     tag_name
   }
   let url = '/ugc/v2/restaurants/' + shopId + '/ratings'
-  console.log(montageURL(url, data));
   return dataJson(url, data);
 }
 
-export {getStoreList, msiteAdress, getFoodTypes, getShopDetails, getFoodList, getRatingList}
+let getRatingScores = (shopId) => {
+  let data = {};
+  let url = '/ugc/v2/restaurants/' + shopId + '/ratings/scores';
+  return dataJson(url, data);
+}
+
+let getRatingTagList = (shopId) => {
+  let data = {};
+  let url = '/ugc/v2/restaurants/' + shopId + '/ratings/tags';
+  return dataJson(url, data);
+}
+export {getStoreList, msiteAdress, getFoodTypes, getShopDetails, getFoodList, getRatingList, getRatingScores, getRatingTagList}

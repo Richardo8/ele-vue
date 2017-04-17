@@ -61,10 +61,10 @@
       </transition>
       <section class="change_show_type" ref="chooseType">
         <div>
-          <span :class="{activity_show: thisTab == 'food'}">商品</span>
+          <span :class="{activity_show: thisTab == 'food'}" @click="thisTab='food'">商品</span>
         </div>
         <div>
-          <span :class="{activity_show: thisTab == 'rating'}">评价</span>
+          <span :class="{activity_show: thisTab == 'rating'}" @click="thisTab='rating'">评价</span>
         </div>
       </section>
       <transition name="fade-choose">
@@ -123,8 +123,8 @@
           </section>
         </section>
       </transition>
-      <!--<transition name="fade-choose">
-        <section class="rating-container" id="ratingContainer" v-for="changeShowType == 'rating'">
+      <transition name="fade-choose">
+        <section class="rating_container" id="ratingContainer" v-show="thisTab == 'rating'">
           <section>
             <section>
               <header class="rating_header">
@@ -136,14 +136,54 @@
                 <section class="rating_header_right">
                   <p>
                     <span>服务态度</span>
-                    <el-rate disabled text-color="#ff9900" v-model="ratingScoresData.service_sorce"></el-rate>
+                    <el-rate disabled text-color="#ff9900" v-model="ratingScoresData.service_score"></el-rate>
+                    <span class="rating_num">{{ratingScoresData.service_score.toFixed(1)}}</span>
+                  </p>
+                  <p>
+                    <span>菜品评价</span>
+                    <el-rate disabled text-color="#ff9900" v-model="ratingScoresData.food_score"></el-rate>
+                    <span class="rating_num">{{ratingScoresData.food_score.toFixed(1)}}</span>
+                  </p>
+                  <p>
+                    <span>送达时间</span>
+                    <span class="delivery_time">{{shopDetailData.order_lead_time}}分钟</span>
                   </p>
                 </section>
               </header>
+              <ul class="tag_list_ul">
+                <li v-for="(item, index) in ratingTagsList" :key="index" :class="{unsatisfied: item.unsatisfied, tagActivity: ratingTafIndex == index}">{{item.name}}({{item.count}})</li>
+              </ul>
+              <ul class="rating_list_ul">
+                <li v-for="(item, index) in ratingList" :key="index" class="rating_list_li">
+                  <img :src="getPicUrl(item.avatar)" class="user_avatar">
+                  <section class="rating_list_details">
+                    <header>
+                      <section class="username_star">
+                        <p class="username">{{item.username}}</p>
+                        <p class="star_desc">
+                          <el-rate disabled text-color="#ff9900" v-model="item.rating_star"></el-rate>
+                          <span class="time_spent_desc">{{item.time_spent_desc}}</span>
+                        </p>
+                      </section>
+                      <time class="rated_at">{{item.rated_at}}</time>
+                    </header>
+                    <ul class="food_img_url">
+                      <li v-for="(item, index) in item.item_ratings" :key="index">
+                        <img :src="getPicUrl(item.image_hash)" v-if="item.image_hash">
+                      </li>
+                    </ul>
+                    <ul class="food_name_ul">
+                      <li v-for="(item, index) in item.item_ratings" :key="index" class="ellipsis">
+                        {{item.food_name}}
+                      </li>
+                    </ul>
+                  </section>
+                </li>
+              </ul>
             </section>
           </section>
         </section>
-      </transition>-->
+      </transition>
     </section>
   </div>
 </template>
@@ -151,7 +191,7 @@
 <script>
 import {mapState, mapMutations} from 'vuex'
 import {getPicUrl} from '@/components/commond/mixins'
-import {msiteAdress, getShopDetails, getFoodList, getRatingList} from '@/service/getData'
+import {msiteAdress, getShopDetails, getFoodList, getRatingList, getRatingScores, getRatingTagList} from '@/service/getData'
 import BScroll from 'better-scroll'
 
 export default {
@@ -170,7 +210,9 @@ export default {
             shopListTop: [],
             menuIndexChange: true,
             showActivities: false,
-            ratingOffset: 0
+            ratingOffset: 0,
+            ratingScoresData: null,
+            ratingTagsList: null,
         }
     },
     created(){
@@ -188,6 +230,22 @@ export default {
           this.$nextTick(() => {
               this.getFoodListHeight();
           })
+        }
+      },
+      thisTab: function (value) {
+        if(value === 'rating'){
+            this.$nextTick(() => {
+                this.ratingScroll = new BScroll('#ratingContainer', {
+                    probeType: 3,
+                    deceleration: 0.003,
+                    bounce: false,
+                    swipeTime: 2000,
+                    click: true
+                });
+                this.ratingScroll.on('scroll', (pos) => {
+
+                })
+            })
         }
       }
     },
@@ -211,7 +269,9 @@ export default {
             this.shopDetailData = await getShopDetails(this.shopId, this.latitude, this.longitude);
             this.foodList = await getFoodList(this.shopId);
             this.ratingList = await getRatingList(this.shopId, this.ratingOffset);
-            console.log(this.ratingList)
+            this.ratingScoresData = await getRatingScores(this.shopId);
+            this.ratingTagList = await getRatingTagList(this.shopId)
+            console.log(this.ratingScoresData);
             this.isLoading = false;
         },
         getFoodListHeight(){
@@ -255,7 +315,7 @@ export default {
         },
         showActivitiesFun(){
             this.showActivities = !this.showActivities;
-        }
+        },
     }
 }
 </script>
@@ -645,6 +705,146 @@ export default {
             }
             span:nth-of-type(3){
               @include sc(.5rem, #666);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  /*rating*/
+  .rating_container{
+    flex: 1;
+    overflow-y: hidden;
+    flex-direction: column;
+    p, span, li, time{
+      font-family: Helvetica Neue,Tahoma,Arial;
+    }
+    .rating_header{
+      display: flex;
+      background-color: #fff;
+      padding: .8rem .5rem;
+      margin-bottom: 0.5rem;
+      .rating_header_left{
+        flex: 3;
+        text-align: center;
+        p:nth-of-type(1){
+          @include sc(1.2rem, #f60);
+        }
+        p:nth-of-type(2){
+          @include sc(.65rem, #666);
+          margin-bottom: .1rem;
+        }
+        p:nth-of-type(3){
+          @include sc(.4rem, #999);
+        }
+      }
+      .rating_header_right{
+        flex: 4;
+        p{
+          font-size: .65rem;
+          line-height: 1rem;
+          display: flex;
+          align-items: center;
+          justify-content: flex-start;
+          span:nth-of-type(1){
+            color: #666;
+            margin-right: .5rem;
+          }
+          .rating_num{
+            width: 3rem;
+            @include sc(.55rem, #f60);
+          }
+          .delivery_time{
+            @include sc(.4rem, #999);
+          }
+        }
+      }
+    }
+    .tag_list_ul{
+      display: flex;
+      flex-wrap: wrap;
+      background-color: #fff;
+      padding: .5rem;
+      li{
+        @include sc(.6rem, #6d7885);
+        padding: .3rem .3rem;
+        background-color: #ebf5ff;
+        border-radius: 0.2rem;
+        border: 1px;
+        margin: 0 .4rem .2rem 0;
+      }
+      .unsatisfied{
+        background-color: #f5f5f5;
+        color: #aaa;
+      }
+      .tagActivity{
+        background-color: #3190e8;
+        color: #fff;
+      }
+    }
+    .rating_list_ul{
+      background-color: #fff;
+      padding: 0 .5rem;
+      .rating_list_li{
+        border-top: 1px solid #f1f1f1;
+        display: flex;
+        padding: .6rem 0;
+        .user_avatar{
+          @include wh(1.5rem, 1.5rem);
+          border: 0.025rem;
+          border-radius: 50%;
+          margin-right: .8rem;
+        }
+        .rating_list_details{
+          flex: 1;
+          header{
+            display: flex;
+            flex: 1;
+            justify-content: space-between;
+            margin-bottom: .3rem;
+            .username_star{
+              @include sc(.55rem, #666);
+              .username{
+                color: #666;
+                margin-bottom: .2rem;
+              }
+              .star_desc{
+                display: flex;
+                align-items: center;
+                .time_spent_desc{
+                  @include sc(.55rem, #666)
+                  margin-left: .15rem;
+                }
+              }
+            }
+            .rated_at{
+              @include sc(.4rem, #999);
+            }
+          }
+          .food_img_ul{
+            display: flex;
+            flex-wrap: wrap;
+            margin-bottom: .4rem;
+            li{
+              img{
+                @include wh(3rem, 3rem);
+                margin-right: .4rem;
+                display: block;
+              }
+            }
+          }
+          .food_name_ul{
+            display: flex;
+            flex-wrap: wrap;
+            li{
+              @include sc(.55rem, #999);
+              width: 2.2rem;
+              padding: .2rem;
+              border: 0.025rem solid #ebebeb;
+              border-radius: 0.15rem;
+              margin-right: .3rem;
+              margin-bottom: 4px;
             }
           }
         }
