@@ -136,12 +136,12 @@
                 <section class="rating_header_right">
                   <p>
                     <span>服务态度</span>
-                    <el-rate size="mini" disabled text-color="#ff9900" v-model="ratingScoresData.service_score"></el-rate>
+                    <el-rate class="rating_class" size="mini" disabled text-color="#ff9900" v-model="ratingScoresData.service_score"></el-rate>
                     <span class="rating_num">{{ratingScoresData.service_score.toFixed(1)}}</span>
                   </p>
                   <p>
                     <span>菜品评价</span>
-                    <el-rate disabled text-color="#ff9900" v-model="ratingScoresData.food_score"></el-rate>
+                    <el-rate class="rating_class" disabled text-color="#ff9900" v-model="ratingScoresData.food_score"></el-rate>
                     <span class="rating_num">{{ratingScoresData.food_score.toFixed(1)}}</span>
                   </p>
                   <p>
@@ -758,9 +758,11 @@ export default {
             color: #666;
             margin-right: .5rem;
           }
+          .rating_class{
+            font-size: 0.65rem;
+          }
           .rating_num{
             width: 3rem;
-            font-size: 8px;
             @include sc(.55rem, #f60);
           }
           .delivery_time{
