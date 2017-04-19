@@ -136,7 +136,7 @@
                 <section class="rating_header_right">
                   <p>
                     <span>服务态度</span>
-                    <el-rate disabled text-color="#ff9900" v-model="ratingScoresData.service_score"></el-rate>
+                    <el-rate size="mini" disabled text-color="#ff9900" v-model="ratingScoresData.service_score"></el-rate>
                     <span class="rating_num">{{ratingScoresData.service_score.toFixed(1)}}</span>
                   </p>
                   <p>
@@ -151,7 +151,7 @@
                 </section>
               </header>
               <ul class="tag_list_ul">
-                <li v-for="(item, index) in ratingTagsList" :key="index" :class="{unsatisfied: item.unsatisfied, tagActivity: ratingTafIndex == index}">{{item.name}}({{item.count}})</li>
+                <li v-for="(item, index) in ratingTagsList" :key="index" :class="{unsatisfied: item.unsatisfied, tagActivity: ratingTagIndex == index}">{{item.name}}({{item.count}})</li>
               </ul>
               <ul class="rating_list_ul">
                 <li v-for="(item, index) in ratingList" :key="index" class="rating_list_li">
@@ -213,6 +213,7 @@ export default {
             ratingOffset: 0,
             ratingScoresData: null,
             ratingTagsList: null,
+            ratingTagIndex: 0
         }
     },
     created(){
@@ -243,7 +244,10 @@ export default {
                     click: true
                 });
                 this.ratingScroll.on('scroll', (pos) => {
-
+                    if(Math.abs(Math.round(pos.y)) >= Math.abs(Math.round(this.ratingScroll.maxScrollY))){
+                        this.loadMoreRating();
+                        this.ratingScroll.refresh();
+                    }
                 })
             })
         }
@@ -270,8 +274,8 @@ export default {
             this.foodList = await getFoodList(this.shopId);
             this.ratingList = await getRatingList(this.shopId, this.ratingOffset);
             this.ratingScoresData = await getRatingScores(this.shopId);
-            this.ratingTagList = await getRatingTagList(this.shopId)
-            console.log(this.ratingScoresData);
+            this.ratingTagsList = await getRatingTagList(this.shopId)
+            console.log(this.ratingTagsList);
             this.isLoading = false;
         },
         getFoodListHeight(){
@@ -316,6 +320,9 @@ export default {
         showActivitiesFun(){
             this.showActivities = !this.showActivities;
         },
+        async loadMoreRating(){
+
+        }
     }
 }
 </script>
@@ -753,6 +760,7 @@ export default {
           }
           .rating_num{
             width: 3rem;
+            font-size: 8px;
             @include sc(.55rem, #f60);
           }
           .delivery_time{
