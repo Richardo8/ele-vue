@@ -787,7 +787,7 @@ export default {
             margin-right: .5rem;
           }
           .rating_num{
-            width: 3rem;
+            width: 1rem;
             @include sc(.55rem, #f60);
           }
           .delivery_time{
@@ -901,5 +901,11 @@ export default {
   }
   .fade-choose-enter, .fade-choose-leave-active {
     opacity: 0;
+  }
+</style>
+
+<style lang="scss">
+  .el-rate__icon{
+    font-size: 15px;
   }
 </style>
