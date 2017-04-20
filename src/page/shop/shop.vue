@@ -306,7 +306,7 @@ export default {
             this.isRatingLoading = true;
             this.preventRepeatRequest = true;
             this.ratingOffset += 10;
-            let ratingData = await getRatingList(this.shopId, this.ratingOffset);
+            let ratingData = await getRatingList(this.shopId, this.ratingOffset, this.ratingTagName);
             this.ratingList = [...this.ratingList, ...ratingData];
             this.isRatingLoading = false;
             if(ratingData.length >= 10){
