@@ -125,7 +125,7 @@
       </transition>
       <transition name="fade-choose">
         <section class="rating_container" id="ratingContainer" v-show="thisTab == 'rating'">
-          <section>
+          <section v-loading.fullscreen.lock="isRatingLoading" element-loading-text="拼命加载中">
             <section>
               <header class="rating_header">
                 <section class="rating_header_left">
@@ -136,7 +136,7 @@
                 <section class="rating_header_right">
                   <p>
                     <span>服务态度</span>
-                    <el-rate class="rating_class" size="mini" disabled text-color="#ff9900" v-model="ratingScoresData.service_score"></el-rate>
+                    <el-rate class="rating_class" disabled text-color="#ff9900" v-model="ratingScoresData.service_score"></el-rate>
                     <span class="rating_num">{{ratingScoresData.service_score.toFixed(1)}}</span>
                   </p>
                   <p>
@@ -151,7 +151,7 @@
                 </section>
               </header>
               <ul class="tag_list_ul">
-                <li v-for="(item, index) in ratingTagsList" :key="index" :class="{unsatisfied: item.unsatisfied, tagActivity: ratingTagIndex == index}">{{item.name}}({{item.count}})</li>
+                <li v-for="(item, index) in ratingTagsList" :key="index" :class="{unsatisfied: item.unsatisfied, tagActivity: ratingTagIndex == index}" @click="changeRatingTag(index, item.name)">{{item.name}}({{item.count}})</li>
               </ul>
               <ul class="rating_list_ul">
                 <li v-for="(item, index) in ratingList" :key="index" class="rating_list_li">
@@ -167,7 +167,7 @@
                       </section>
                       <time class="rated_at">{{item.rated_at}}</time>
                     </header>
-                    <ul class="food_img_url">
+                    <ul class="food_img_ul">
                       <li v-for="(item, index) in item.item_ratings" :key="index">
                         <img :src="getPicUrl(item.image_hash)" v-if="item.image_hash">
                       </li>
@@ -201,6 +201,7 @@ export default {
             shopId: null,
             shopDetailData: null,
             isLoading: true,
+            isRatingLoading: false,
             thisTab: 'food',
             foodList: null,
             ratingList: null,
@@ -213,7 +214,11 @@ export default {
             ratingOffset: 0,
             ratingScoresData: null,
             ratingTagsList: null,
-            ratingTagIndex: 0
+            ratingTagIndex: 0,
+            ratingTagName: null,
+            preventRepeatRequest: false,
+            ratingScroll: null,
+            wrapperMenu: null,
         }
     },
     created(){
@@ -225,34 +230,6 @@ export default {
         this.initData()
     },
     mixins: [getPicUrl],
-    watch: {
-      isLoading: function (value) {
-        if(!value){
-          this.$nextTick(() => {
-              this.getFoodListHeight();
-          })
-        }
-      },
-      thisTab: function (value) {
-        if(value === 'rating'){
-            this.$nextTick(() => {
-                this.ratingScroll = new BScroll('#ratingContainer', {
-                    probeType: 3,
-                    deceleration: 0.003,
-                    bounce: false,
-                    swipeTime: 2000,
-                    click: true
-                });
-                this.ratingScroll.on('scroll', (pos) => {
-                    if(Math.abs(Math.round(pos.y)) >= Math.abs(Math.round(this.ratingScroll.maxScrollY))){
-                        this.loadMoreRating();
-                        this.ratingScroll.refresh();
-                    }
-                })
-            })
-        }
-      }
-    },
     computed: {
       ...mapState([
           'latitude', 'longitude'
@@ -275,7 +252,6 @@ export default {
             this.ratingList = await getRatingList(this.shopId, this.ratingOffset);
             this.ratingScoresData = await getRatingScores(this.shopId);
             this.ratingTagsList = await getRatingTagList(this.shopId)
-            console.log(this.ratingTagsList);
             this.isLoading = false;
         },
         getFoodListHeight(){
@@ -290,23 +266,26 @@ export default {
         },
         listenScroll(ele){
             this.foodScroll =new BScroll(ele, {
-                probeType: 3,
-                deceleration: 0.001,
-                bounce: false,
-                swipeTime: 2000,
-                click: true,
+              probeType: 3,
+              deceleration: 0.001,
+              bounce: false,
+              swipeTime: 2000,
+              click: true,
             })
 
             this.wrapperMenu = new BScroll('#wrapper_menu', {
-                click: true,
+              click: true,
             })
 
             this.foodScroll.on('scroll', (pos) => {
-                this.shopListTop.forEach((item, index) => {
-                    if(this.menuIndexChange && Math.abs(Math.round(pos.y)) >= item){
-                        this.menuIndex = index;
-                    }
-                })
+              this.shopListTop.forEach((item, index) => {
+                if(this.menuIndexChange && Math.abs(Math.round(pos.y)) >= item){
+                  this.menuIndex = index;
+                }
+              })
+//              let menuList = this.$refs.wrapperMenu.querySelectorAll('.activity_menu');
+//              let el = menuList[0];
+//              this.wrapperMenu.scrollToElement(el, 800);
             })
         },
         chooseMenu(index){
@@ -321,9 +300,58 @@ export default {
             this.showActivities = !this.showActivities;
         },
         async loadMoreRating(){
-
+            if (this.preventRepeatRequest) {
+              return
+            }
+            this.isRatingLoading = true;
+            this.preventRepeatRequest = true;
+            this.ratingOffset += 10;
+            let ratingData = await getRatingList(this.shopId, this.ratingOffset);
+            this.ratingList = [...this.ratingList, ...ratingData];
+            this.isRatingLoading = false;
+            if(ratingData.length >= 10){
+                this.preventRepeatRequest = false;
+            }
+        },
+        async changeRatingTag(index, name){
+            this.ratingTagIndex = index;
+            this.ratingOffset = 0;
+            this.ratingTagName = name;
+            let data = await getRatingList(this.shopId, this.ratingOffset, name);
+            this.ratingList = [...data];
+            this.$nextTick(() => {
+                this.ratingScroll.refresh();
+            })
         }
-    }
+    },
+    watch: {
+        isLoading: function (value) {
+          if(!value){
+            this.$nextTick(() => {
+              this.getFoodListHeight();
+            })
+          }
+        },
+        thisTab: function (value) {
+          if(value === 'rating'){
+            this.$nextTick(() => {
+              this.ratingScroll = new BScroll('#ratingContainer', {
+                probeType: 3,
+                deceleration: 0.003,
+                bounce: false,
+                swipeTime: 2000,
+                click: true
+              });
+              this.ratingScroll.on('scroll', (pos) => {
+                if(Math.abs(Math.round(pos.y)) >= Math.abs(Math.round(this.ratingScroll.maxScrollY))){
+                    this.loadMoreRating();
+                    this.ratingScroll.refresh();
+                }
+              })
+            })
+          }
+        }
+    },
 }
 </script>
 
@@ -758,9 +786,6 @@ export default {
             color: #666;
             margin-right: .5rem;
           }
-          .rating_class{
-            font-size: 0.65rem;
-          }
           .rating_num{
             width: 3rem;
             @include sc(.55rem, #f60);
@@ -860,5 +885,21 @@ export default {
         }
       }
     }
+  }
+
+  .fade-enter-active, .fade-leave-active {
+    transition: opacity .5s;
+  }
+  .fade-enter, .fade-leave-active {
+    opacity: 0;
+  }
+  .fade-choose-enter-active, .fade-choose-leave-active {
+    transition: opacity .5s;
+  }
+  .fade-choose-leave, .fade-choose-leave-active {
+    display: none;
+  }
+  .fade-choose-enter, .fade-choose-leave-active {
+    opacity: 0;
   }
 </style>
