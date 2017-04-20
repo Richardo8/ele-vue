@@ -215,7 +215,7 @@ export default {
             ratingScoresData: null,
             ratingTagsList: null,
             ratingTagIndex: 0,
-            ratingTagName: null,
+            ratingTagName: '',
             preventRepeatRequest: false,
             ratingScroll: null,
             wrapperMenu: null,
