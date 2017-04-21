@@ -70,7 +70,7 @@
       <transition name="fade-choose">
         <section v-show="thisTab == 'food'" class="food_container">
           <section class="menu_container">
-            <section class="menu_left" id="wrapper_menu">
+            <section class="menu_left" id="wrapper_menu" ref="wrapperMenu">
               <ul>
                 <li v-for="(item, index) in foodList" :key="index" class="menu_left_li" :class="{activity_menu: index == menuIndex}" @click="chooseMenu(index)">
                   <img :src="getPicUrl(item.icon_url)" v-if="item.icon_url">
@@ -283,14 +283,14 @@ export default {
                   this.menuIndex = index;
                 }
               })
-//              let menuList = this.$refs.wrapperMenu.querySelectorAll('.activity_menu');
-//              let el = menuList[0];
-//              this.wrapperMenu.scrollToElement(el, 800);
+              let menuList = this.$refs.wrapperMenu.querySelectorAll('.activity_menu');
+              let el = menuList[0];
+              this.wrapperMenu.scrollToElement(el, 100);
             })
         },
         chooseMenu(index){
             this.menuIndex = index;
-            this.menuIndexChang = false;
+            this.menuIndexChange = false;
             this.foodScroll.scrollTo(0, -this.shopListTop[index], 400);
             this.foodScroll.on('scrollEnd', () => {
                 this.menuIndexChange = true;
