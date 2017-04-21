@@ -265,7 +265,7 @@ export default {
             this.listenScroll(listContainer);
         },
         listenScroll(ele){
-            this.foodScroll =new BScroll(ele, {
+            this.foodScroll = new BScroll(ele, {
               probeType: 3,
               deceleration: 0.001,
               bounce: false,
@@ -274,6 +274,7 @@ export default {
             })
 
             this.wrapperMenu = new BScroll('#wrapper_menu', {
+              bounce: false,
               click: true,
             })
 
