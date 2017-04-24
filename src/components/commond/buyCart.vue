@@ -2,7 +2,7 @@
   <section class="cart_module">
     <section v-if="!foods.specifications.length" class="cart_button">
       <transition name="showReduce">
-        <span v-if="foodNum">
+        <span v-if="foodNum" @click="removeOutCart(foods.category_id, foods.item_id, foods.specfoods[0].food_id, foods.specfoods[0].name, foods.specfoods[0].price, '', foods.specfoods[0].packing_fee, foods.specfoods[0].sku_id, foods.specfoods[0].stock)">
           <svg>
             <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#cart-minus"></use>
           </svg>
@@ -66,7 +66,7 @@
       props: ['foods', 'shopId'],
       methods: {
         ...mapMutations([
-            'ADD_CART'
+            'ADD_CART', 'REDUCE_CART'
         ]),
         addToCart(category_id, item_id, food_id, name, price, specs, packing_fee, sku_id, stock, event){
             this.ADD_CART({shopId: this.shopId, category_id, item_id, food_id, name, price, specs, packing_fee, sku_id, stock});
@@ -74,6 +74,11 @@
             let elBottom = event.target.getBoundingClientRect().bottom;
             this.showMoveDot.push(true);
             this.$emit('showMoveDot', this.showMoveDot, elLeft, elBottom);
+        },
+        removeOutCart(category_id, item_id, food_id, name, price, specs, packing_fee, sku_id, stock){
+            if(this.foodNum > 0){
+                this.REDUCE_CART({shopId: this.shopId, category_id, item_id, food_id, name, price, specs, packing_fee, sku_id, stock})
+            }
         }
       }
   }
