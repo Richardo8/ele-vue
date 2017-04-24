@@ -43,10 +43,24 @@
 
       },
       computed: {
+        ...mapState([
+            'cartList'
+        ]),
+        shopCart: function () {
+          return Object.assign({}, this.cartList[this.shopId]);
+        },
         foodNum: function () {
           let category_id = this.foods.category_id;
           let item_id = this.foods.item_id;
-//          if(this.shop)
+          if(this.shopCart && this.shopCart[category_id] && this.shopCart[category_id][item_id]){
+              let num = 0;
+              Object.values(this.shopCart[category_id][item_id]).forEach((item, index) => {
+                  num += item.num;
+              })
+              return num;
+          }else{
+              return 0;
+          }
         }
       },
       props: ['foods', 'shopId'],
@@ -55,7 +69,7 @@
             'ADD_CART'
         ]),
         addToCart(category_id, item_id, food_id, name, price, specs, packing_fee, sku_id, stock, event){
-            this.ADD_CART({shopid: this.shopId, category_id, item_id, food_id, name, price, specs, packing_fee, sku_id, stock});
+            this.ADD_CART({shopId: this.shopId, category_id, item_id, food_id, name, price, specs, packing_fee, sku_id, stock});
             let elLeft = event.target.getBoundingClientRect().left;
             let elBottom = event.target.getBoundingClientRect().bottom;
             this.showMoveDot.push(true);

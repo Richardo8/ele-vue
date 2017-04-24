@@ -426,8 +426,16 @@ export default {
             let cartFoodNum = 0;
             this.totalPrice = 0;
             this.cartFoodList = [];
-            this.menuList.forEach((item, index) => {
-
+            this.foodList.forEach((item, index) => {
+                if(this.shopCart && this.shopCart[item.foods[0].category_id]){
+                    let num = 0;
+                    Object.keys(this.shopCart[item.foods[0].category_id]).forEach(itemid => {
+                        Object.keys(this.shopCart[item.foods[0].category_id][itemid]).forEach(foodid => {
+                            let foodItem = this.shopCart[item.foods[0].category_id][itemid][foodid];
+                            num += foodItem.num;
+                        })
+                    })
+                }
             })
         },
         addToCart(category_id, item_id, food_id, name, price, specs){

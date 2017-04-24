@@ -40,7 +40,6 @@ export default {
       }
     }
     state.cartList = {...cart};
-    console.log(state.cartList)
     setStore('buyCart', state.cartList);
   }
 }
