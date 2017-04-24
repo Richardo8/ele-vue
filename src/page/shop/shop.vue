@@ -116,11 +116,76 @@
                         </p>
                       </section>
                     </router-link>
+                    <footer class="menu_detail_footer">
+                      <section class="food_price">
+                        <span>￥</span>
+                        <!--<span>{{foods.specfoods[0].price}}</span>-->
+                        <!--<span v-if="foods.specifications.length">起</span>-->
+                      </section>
+                    </footer>
                   </section>
                 </li>
               </ul>
             </section>
           </section>
+          <section class="buy_cart_container">
+            <section class="cart_icon_num">
+              <div class="cart_icon_container" :class="{cart_icon_activity: totalPrice > 0, move_in_cart: receiveInCart}" ref="cartContainer">
+                <span v-if="totalNum" class="cart_list_length">
+                  {{totalNum}}
+                </span>
+                <svg class="cart_icon">
+                  <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#cart-icon"></use>
+                </svg>
+              </div>
+              <div class="cart_num">
+                <div>￥ {{totalPrice}}</div>
+                <div>配送费￥{{deliveryFee}}</div>
+              </div>
+            </section>
+            <section class="gotopay" :class="{gotopay_activity: minimumOrderAmount <= 0}">
+              <span class="gotopay_button_style" v-if="minimumOrderAmount > 0">还差￥{{minimumOrderAmount}}起送</span>
+              <router-link to="{path: '/confirmOrder', query:{geohash, shopId}}" class="gotopay_button_style" v-else>去结算</router-link>
+            </section>
+          </section>
+          <transition name="toggle-cart">
+            <section class="cart_food_list" v-show="showCartList&&cartFoodList.length">
+              <header>
+                <h4>购物车</h4>
+                <div>
+                  <svg>
+                    <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#cart-remove"></use>
+                  </svg>
+                  <span class="clear_cart">清空</span>
+                </div>
+              </header>
+              <section class="cart_food_details" id="carFood">
+                <ul>
+                  <li v-for="(item, index) in cartFoodList" :key="index" class="cart_food_li">
+                    <div class="cart_list_num">
+                      <p class="ellipsis">{{item.name}}</p>
+                      <p class="ellipsis">{{item.specs}}</p>
+                    </div>
+                    <div class="cart_list_price">
+                      <span>￥</span>
+                      <span>{{item.price}}</span>
+                    </div>
+                    <section class="cart_list_control">
+                      <span>
+                        <svg>
+                          <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#cart-minus"></use>
+                        </svg>
+                      </span>
+                      <span class="cart_num">{{item.num}}</span>
+                      <svg class="cart_add" >
+                        <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#cart-add"></use>
+                      </svg>
+                    </section>
+                  </li>
+                </ul>
+              </section>
+            </section>
+          </transition>
         </section>
       </transition>
       <transition name="fade-choose">
@@ -197,16 +262,16 @@ import BScroll from 'better-scroll'
 export default {
     data(){
         return {
-            geohash: '',
-            shopId: null,
-            shopDetailData: null,
-            isLoading: true,
-            isRatingLoading: false,
-            thisTab: 'food',
-            foodList: null,
-            ratingList: null,
-            menuIndex: 0,
-            TitleDetailIndex: null,
+            geohash: '', // 位置信息
+            shopId: null, // 商店id
+            shopDetailData: null, // 商铺详情
+            isLoading: true, // 是否显示loading层
+            isRatingLoading: false, // 是否显示评价页面的loading层
+            thisTab: 'food', // 切换食物和评价的tab
+            foodList: null, // 视频列表
+            ratingList: null, // 评价列表
+            menuIndex: 0, // 菜单左侧栏位置
+            TitleDetailIndex: null, //
             foodScroll: null,
             shopListTop: [],
             menuIndexChange: true,
@@ -217,8 +282,10 @@ export default {
             ratingTagIndex: 0,
             ratingTagName: '',
             preventRepeatRequest: false,
-            ratingScroll: null,
+            ratingScroll: null, // 评价页Scroll
             wrapperMenu: null,
+            cartFoodList: [], // 购物车商品列表,
+            totalPrice: 0, // 总价
         }
     },
     created(){
@@ -322,6 +389,15 @@ export default {
             this.ratingList = [...data];
             this.$nextTick(() => {
                 this.ratingScroll.refresh();
+            })
+        },
+        initCategoryNum(){
+            let newArr = [];
+            let cartFoodNum = 0;
+            this.totalPrice = 0;
+            this.cartFoodList = [];
+            this.menuList.forEach((item, index) => {
+
             })
         }
     },
@@ -745,6 +821,86 @@ export default {
           }
         }
       }
+    }
+  }
+
+  /*buyCar*/
+  .buy_cart_container{
+    position: absolute;
+    background-color: #3d3d3f;
+    bottom: 0;
+    left: 0;
+    z-index: 13;
+    display: flex;
+    @include wh(100%, 2rem);
+    .cart_icon_num{
+      flex: 1;
+      .cart_icon_container{
+        display: flex;
+        background-color: #3d3d3f;
+        position: absolute;
+        padding: .4rem;
+        border: 0.18rem solid #444;
+        border-radius: 50%;
+        left: .5rem;
+        top: -.7rem;
+        .cart_icon{
+          @include wh(1.2rem, 1.2rem);
+        }
+        .cart_list_length{
+          position: absolute;
+          top: -.25rem;
+          right: -.25rem;
+          background-color: #ff461d;
+          line-height: .7rem;
+          text-align: center;
+          border-radius: 50%;
+          border: 0.025rem solid #ff461d;
+          min-width: .7rem;
+          height: .7rem;
+          @include sc(.5rem, #fff);
+          font-family: Helvetica Neue,Tahoma,Arial;
+        }
+      }
+      .move_in_cart{
+        animation: mymove .5s ease-in-out;
+      }
+      .cart_icon_activity{
+        background-color: #3190e8;
+      }
+      .cart_num{
+        @include ct;
+        left: 3.5rem;
+
+        div{
+          color: #fff;
+        }
+        div:nth-of-type(1){
+          font-size: .8rem;
+          font-weight: bold;
+          margin-bottom: .1rem;
+        }
+        div:nth-of-type(2){
+          font-size: .4rem;
+        }
+      }
+    }
+    .gotopay{
+      position: absolute;
+      right: 0;
+      background-color: #535356;
+      @include wh(5rem, 100%);
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      .gotopay_button_style{
+        @include sc(.7rem, #fff);
+        font-weight: bold;
+      }
+    }
+    .gotopay_acitvity{
+      background-color: #4cd964;
     }
   }
 
