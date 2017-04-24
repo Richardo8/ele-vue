@@ -187,9 +187,24 @@ const animate = (element, target, duration = 400, mode = 'ease-out', callback) =
   }, 20);
 }
 
+const setStore = (name, content) => {
+  if(!name) return;
+  if(typeof content !== 'string'){
+    content = JSON.stringify(content);
+  }
+  window.localStorage.setItem(name, content);
+}
+
+const getStore = name => {
+  if(!name) return;
+  return window.localStorage.getItem(name);
+}
+
 
 export {
   getStyle,
   showBack,
-  animate
+  animate,
+  setStore,
+  getStore
 }

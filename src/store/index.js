@@ -8,6 +8,7 @@ const state = {
   latitude: '',
   longitude: '',
   geohash: '',
+  cartList: {}
 }
 
 export default new Vuex.Store({

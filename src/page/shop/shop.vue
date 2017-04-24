@@ -75,6 +75,7 @@
                 <li v-for="(item, index) in foodList" :key="index" class="menu_left_li" :class="{activity_menu: index == menuIndex}" @click="chooseMenu(index)">
                   <img :src="getPicUrl(item.icon_url)" v-if="item.icon_url">
                   <span>{{item.name}}</span>
+                  <span class="category_num" v-if="categoryNum[index]&&item.type==1">{{categoryNum[index]}}</span>
                 </li>
               </ul>
             </section>
@@ -178,7 +179,7 @@
                         </svg>
                       </span>
                       <span class="cart_num">{{item.num}}</span>
-                      <svg class="cart_add" >
+                      <svg class="cart_add" @click="addToCart(item.category_id, item.item_id, item.food_id, item.name, item.price, item.specs)">
                         <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#cart-add"></use>
                       </svg>
                     </section>
@@ -287,7 +288,10 @@ export default {
             ratingScroll: null, // 评价页Scroll
             wrapperMenu: null,
             cartFoodList: [], // 购物车商品列表,
-            totalPrice: 0, // 总价
+            totalPrice: 0, // 总价,
+            categoryNum: [], // 商品类型右上角已加入购物车的数量
+            receiveInCart: false, // 购物车组件下落的原点是否到达目标位置
+            showCartList: false, // 显示购物车列表
         }
     },
     created(){
@@ -304,15 +308,36 @@ export default {
     },
     computed: {
       ...mapState([
-          'latitude', 'longitude'
+          'latitude', 'longitude', 'cartList'
       ]),
       promotionInfo: function () {
         return this.shopDetailData.promotion_info || '欢迎光临，用餐高峰请提前下单，谢谢。'
+      },
+      deliveryFee: function () {
+        if(this.shopDetailData){
+            return this.shopDetailData.float_delivery_fee;
+        }else{
+            return null;
+        }
+      },
+      totalNum: function () {
+        let num = 0;
+        this.cartFoodList.forEach(item => {
+            num += item.num
+        })
+        return num;
+      },
+      minimumOrderAmount: function () {
+        if(this.shopDetailData){
+            return this.shopDetailData.float_minimum_order_amount - this.totalPrice;
+        }else{
+            return null;
+        }
       }
     },
     methods: {
         ...mapMutations([
-            'RECORD_ADDRESS'
+            'RECORD_ADDRESS', 'ADD_CART'
         ]),
         async initData(){
             if(!this.latitued){
@@ -404,6 +429,9 @@ export default {
             this.menuList.forEach((item, index) => {
 
             })
+        },
+        addToCart(category_id, item_id, food_id, name, price, specs){
+            this.ADD_CART({shopId: this.shopId, category_id, item_id, food_id, name, price, specs})
         }
     },
     watch: {
