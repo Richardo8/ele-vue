@@ -119,9 +119,10 @@
                     <footer class="menu_detail_footer">
                       <section class="food_price">
                         <span>￥</span>
-                        <!--<span>{{foods.specfoods[0].price}}</span>-->
-                        <!--<span v-if="foods.specifications.length">起</span>-->
+                        <span>{{foods.specfoods[0].price}}</span>
+                        <span v-if="foods.specifications.length">起</span>
                       </section>
+                      <buy-cart :shopId="shopId" :foods="foods"></buy-cart>
                     </footer>
                   </section>
                 </li>
@@ -256,6 +257,7 @@
 <script>
 import {mapState, mapMutations} from 'vuex'
 import {getPicUrl} from '@/components/commond/mixins'
+import buyCart from '@/components/commond/buyCart'
 import {msiteAdress, getShopDetails, getFoodList, getRatingList, getRatingScores, getRatingTagList} from '@/service/getData'
 import BScroll from 'better-scroll'
 
@@ -297,6 +299,9 @@ export default {
         this.initData()
     },
     mixins: [getPicUrl],
+    components: {
+        buyCart
+    },
     computed: {
       ...mapState([
           'latitude', 'longitude'
