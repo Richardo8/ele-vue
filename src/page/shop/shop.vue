@@ -131,7 +131,7 @@
             </section>
           </section>
           <section class="buy_cart_container">
-            <section class="cart_icon_num">
+            <section @click="toggleCartList" class="cart_icon_num">
               <div class="cart_icon_container" :class="{cart_icon_activity: totalPrice > 0, move_in_cart: receiveInCart}" ref="cartContainer">
                 <span v-if="totalNum" class="cart_list_length">
                   {{totalNum}}
@@ -333,6 +333,9 @@ export default {
         }else{
             return null;
         }
+      },
+      shopCart: function () {
+        return {...this.cartList[this.shopId]}
       }
     },
     methods: {
@@ -433,10 +436,32 @@ export default {
                         Object.keys(this.shopCart[item.foods[0].category_id][itemid]).forEach(foodid => {
                             let foodItem = this.shopCart[item.foods[0].category_id][itemid][foodid];
                             num += foodItem.num;
+                            if(item.type == 1){
+                                this.totalPrice += foodItem.num * foodItem.price;
+                                if(foodItem.num > 0){
+                                    this.cartFoodList[cartFoodNum] = {};
+                                    this.cartFoodList[cartFoodNum].category_id = item.foods[0].category_id;
+                                    this.cartFoodList[cartFoodNum].item_id = itemid;
+                                    this.cartFoodList[cartFoodNum].food_id = foodid;
+                                    this.cartFoodList[cartFoodNum].num = foodItem.num;
+                                    this.cartFoodList[cartFoodNum].price = foodItem.price;
+                                    this.cartFoodList[cartFoodNum].name = foodItem.name;
+                                    this.cartFoodList[cartFoodNum].specs = foodItem.specs;
+                                    cartFoodNum ++;
+                                }
+                            }
                         })
                     })
+                    newArr[index] = num;
+                }else{
+                    newArr[index] = 0;
                 }
             })
+            this.totalPrice = this.totalPrice.toFixed(2);
+            this.categoryNum = [...newArr];
+        },
+        toggleCartList(){
+            this.cartFoodList.length ? this.showCartList = !this.showCartList : true;
         },
         addToCart(category_id, item_id, food_id, name, price, specs){
             this.ADD_CART({shopId: this.shopId, category_id, item_id, food_id, name, price, specs})
@@ -449,6 +474,9 @@ export default {
               this.getFoodListHeight();
             })
           }
+        },
+        shopCart: function () {
+          this.initCategoryNum();
         },
         thisTab: function (value) {
           if(value === 'rating'){
