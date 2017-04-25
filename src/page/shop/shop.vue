@@ -188,6 +188,9 @@
               </section>
             </section>
           </transition>
+          <transition name="fade">
+            <div class="screen_cover" v-show="showCartList && cartFoodList.length" @click="toggleCartList"></div>
+          </transition>
         </section>
       </transition>
       <transition name="fade-choose">
@@ -471,6 +474,7 @@ export default {
         isLoading: function (value) {
           if(!value){
             this.$nextTick(() => {
+              console.log('1')
               this.getFoodListHeight();
             })
           }
@@ -968,10 +972,100 @@ export default {
         font-weight: bold;
       }
     }
-    .gotopay_acitvity{
+    .gotopay_activity{
       background-color: #4cd964;
     }
   }
+  .cart_food_list{
+    position: fixed;
+    width: 100%;
+    padding-bottom: 2rem;
+    z-index: 12;
+    bottom: 0;
+    left: 0;
+    background-color: #fff;
+    header{
+      @include fj;
+      align-items: center;
+      padding: .3rem .6rem;
+      background-color: #eceff1;
+      svg{
+        @include wh(.6rem,.6rem);
+        vertical-align: middle;
+      }
+      h4{
+        @include sc(.7rem, #666);
+      }
+      .clear_cart{
+        @include sc(.6rem, #666);
+      }
+    }
+    .cart_food_details{
+      background-color: #fff;
+      max-height: 20rem;
+      overflow-y: auto;
+      .cart_food_li{
+        @include fj;
+        padding: .6rem .5rem;
+        .cart_list_num{
+          width: 55%;
+          p:nth-of-type(1){
+            @include sc(.7rem, #666);
+            font-weight: bold;
+          }
+          p:nth-of-type(2){
+            @include sc(.4rem, #666);
+          }
+        }
+        .cart_list_price{
+          font-size: 0;
+          span:nth-of-type(1){
+            @include sc(.6rem, #f60);
+            font-family: Helvetica Neue,Tahoma;
+
+          }
+          span:nth-of-type(2){
+            @include sc(.7rem, #f60);
+            font-family: Helvetica Neue,Tahoma;
+            font-weight: bold;
+          }
+        }
+        .cart_list_control{
+          display: flex;
+          align-items: center;
+          span{
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          }
+          svg{
+            @include wh(.9rem, .9rem);
+            fill: #3190e8;
+          }
+          .specs_reduce_icon{
+            fill: #999;
+          }
+          .cart_num{
+            @include sc(.65rem, #666);
+            min-width: 1rem;
+            text-align: center;
+            font-family: Helvetica Neue,Tahoma;
+          }
+        }
+      }
+    }
+  }
+  .screen_cover{
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: rgba(0,0,0,.3);
+    z-index: 11;
+  }
+
+
 
   /*rating*/
   .rating_container{
@@ -1127,6 +1221,13 @@ export default {
   }
   .fade-choose-enter, .fade-choose-leave-active {
     opacity: 0;
+  }
+
+  .toggle-cart-enter-active, .toggle-cart-leave-active {
+    transition: all .3s ease-out;
+  }
+  .toggle-cart-enter, .toggle-cart-leave-active {
+    transform: translateY(100%);
   }
 </style>
 
