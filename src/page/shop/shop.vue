@@ -555,6 +555,7 @@ export default {
 <style lang="scss" scoped>
   @import 'src/style/mixin';
 
+  /*购物车动画效果*/
   @keyframes mymove{
     0%   { transform: scale(1) }
     25%  { transform: scale(.8) }
