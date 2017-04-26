@@ -123,7 +123,7 @@
                         <span>{{foods.specfoods[0].price}}</span>
                         <span v-if="foods.specifications.length">起</span>
                       </section>
-                      <buy-cart :shopId="shopId" :foods="foods"></buy-cart>
+                      <buy-cart :shopId="shopId" :foods="foods" @showMoveDot="showMoveDotFun"></buy-cart>
                     </footer>
                   </section>
                 </li>
@@ -255,6 +255,13 @@
         </section>
       </transition>
     </section>
+    <transition appear @after-appear="afterEnter" @before-appear="beforeEnter" v-for="(item,index) in showMoveDot" :key="index">
+      <span class="move_dot" v-if="item">
+        <svg class="move_liner">
+          <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#cart-add"></use>
+        </svg>
+      </span>
+    </transition>
   </div>
 </template>
 
@@ -294,7 +301,11 @@ export default {
             totalPrice: 0, // 总价,
             categoryNum: [], // 商品类型右上角已加入购物车的数量
             receiveInCart: false, // 购物车组件下落的原点是否到达目标位置
-            showCartList: false, // 显示购物车列表
+            showCartList: false, // 显示购物车列表,
+            showMoveDot: [], // 控制下落的小圆点显示隐藏，
+            elLeft: 0, //当前点击家按钮在网页中的绝对top值
+            elBottom: 0, //当前点击加按钮在网页中的绝对left值
+            windowHeight: null, //屏幕的高度
         }
     },
     created(){
@@ -303,7 +314,8 @@ export default {
 
     },
     mounted(){
-        this.initData()
+        this.initData();
+        this.windowHeight = window.innerHeight;
     },
     mixins: [getPicUrl],
     components: {
@@ -468,6 +480,41 @@ export default {
         },
         addToCart(category_id, item_id, food_id, name, price, specs){
             this.ADD_CART({shopId: this.shopId, category_id, item_id, food_id, name, price, specs})
+        },
+        listenInCart(){
+            if(!this.receiveInCart){
+                this.receiveInCart = true;
+                this.$refs.cartContainer.addEventListener('animationend', () => {
+                    this.receiveInCart = false;
+                })
+                this.$refs.cartContainer.addEventListener('webkitAnimationEnd', () => {
+                    this.receiveInCart = false;
+                })
+            }
+        },
+        showMoveDotFun(showMoveDot, elLeft, elBottom){
+            this.showMoveDot = [...this.showMoveDot, ...showMoveDot];
+            this.elLeft = elLeft;
+            this.elBottom = elBottom;
+        },
+        beforeEnter(el){
+            el.style.transform = `translate3d(0,${37 + this.elBottom - this.windowHeight}px,0)`;
+            el.children[0].style.transform = `translate3d(${this.elLeft - 30}px,0,0)`;
+            el.children[0].style.opacity = 0;
+        },
+        afterEnter(el){
+            el.style.transform = `translate3d(0,0,0)`;
+            el.children[0].style.transform = `translate3d(0,0,0)`;
+            el.style.transition = 'transform .55s cubic-bezier(0.3, -0.25, 0.7, -0.15)';
+            el.children[0].style.transition = 'transform .55s linear';
+            this.showMoveDot = this.showMoveDot.map(item => false);
+            el.children[0].style.opacity = 1;
+            el.children[0].addEventListener('transitionend', () => {
+              this.listenInCart();
+            })
+            el.children[0].addEventListener('webkitAnimationEnd', () => {
+              this.listenInCart();
+            })
         }
     },
     watch: {
@@ -1065,7 +1112,17 @@ export default {
     z-index: 11;
   }
 
+  /*circle*/
+  .move_dot{
+    position: fixed;
+    bottom: 30px;
+    left: 30px;
 
+    svg{
+      @include wh(.9rem, .9rem);
+      fill: #3190e8;
+    }
+  }
 
   /*rating*/
   .rating_container{
