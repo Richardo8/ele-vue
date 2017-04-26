@@ -151,7 +151,7 @@
             </section>
           </section>
           <transition name="toggle-cart">
-            <section class="cart_food_list" v-show="showCartList&&cartFoodList.length">
+            <section class="cart_food_list" v-show="showCartList && cartFoodList.length">
               <header>
                 <h4>购物车</h4>
                 <div>
@@ -521,8 +521,6 @@ export default {
         },
         removeOutCart(category_id, item_id, food_id, name, price, specs){
             this.REDUCE_CART({shopId: this.shopId, category_id, item_id, food_id, name, price, specs})
-          console.log(this.cartFoodList.length)
-          console.log(this.showCartList)
         },
         clearCart(){
             this.toggleCartList();
@@ -599,6 +597,11 @@ export default {
             this.$nextTick(() => {
               this.getFoodListHeight();
             })
+          }
+        },
+        cartFoodList: function (value) {
+          if(!value.length){
+              this.showCartList = false;
           }
         },
         shopCart: function () {
