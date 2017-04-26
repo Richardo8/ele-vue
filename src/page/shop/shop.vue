@@ -555,6 +555,35 @@ export default {
 <style lang="scss" scoped>
   @import 'src/style/mixin';
 
+  @keyframes mymove{
+    0%   { transform: scale(1) }
+    25%  { transform: scale(.8) }
+    50%  { transform: scale(1.1) }
+    75%  { transform: scale(.9) }
+    100% { transform: scale(1) }
+  }
+  @-moz-keyframes mymove{
+    0%   { transform: scale(1) }
+    25%  { transform: scale(.8) }
+    50%  { transform: scale(1.1) }
+    75%  { transform: scale(.9) }
+    100% { transform: scale(1) }
+  }
+  @-webkit-keyframes mymove{
+    0%   { transform: scale(1) }
+    25%  { transform: scale(.8) }
+    50%  { transform: scale(1.1) }
+    75%  { transform: scale(.9) }
+    100% { transform: scale(1) }
+  }
+  @-o-keyframes mymove{
+    0%   { transform: scale(1) }
+    25%  { transform: scale(.8) }
+    50%  { transform: scale(1.1) }
+    75%  { transform: scale(.9) }
+    100% { transform: scale(1) }
+  }
+
   /*头部*/
   .shop_container{
     display: flex;
