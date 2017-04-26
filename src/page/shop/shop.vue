@@ -158,7 +158,7 @@
                   <svg>
                     <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#cart-remove"></use>
                   </svg>
-                  <span class="clear_cart">清空</span>
+                  <span class="clear_cart" @click="clearCart">清空</span>
                 </div>
               </header>
               <section class="cart_food_details" id="carFood">
@@ -174,7 +174,7 @@
                     </div>
                     <section class="cart_list_control">
                       <span>
-                        <svg>
+                        <svg @click="removeOutCart(item.category_id, item.item_id, item.food_id, item.name, item.price, item.specs)">
                           <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#cart-minus"></use>
                         </svg>
                       </span>
@@ -355,7 +355,7 @@ export default {
     },
     methods: {
         ...mapMutations([
-            'RECORD_ADDRESS', 'ADD_CART'
+            'RECORD_ADDRESS', 'ADD_CART', 'REDUCE_CART', 'CLEAR_CART'
         ]),
         async initData(){
             if(!this.latitued){
@@ -481,6 +481,13 @@ export default {
         addToCart(category_id, item_id, food_id, name, price, specs){
             this.ADD_CART({shopId: this.shopId, category_id, item_id, food_id, name, price, specs})
         },
+        removeOutCart(category_id, item_id, food_id, name, price, specs){
+            this.REDUCE_CART({shopId: this.shopId, category_id, item_id, food_id, name, price, specs})
+        },
+        clearCart(){
+            this.toggleCartList();
+            this.CLEAR_CART(this.shopId);
+        },
         listenInCart(){
             if(!this.receiveInCart){
                 this.receiveInCart = true;
@@ -521,7 +528,6 @@ export default {
         isLoading: function (value) {
           if(!value){
             this.$nextTick(() => {
-              console.log('1')
               this.getFoodListHeight();
             })
           }

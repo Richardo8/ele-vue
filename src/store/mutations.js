@@ -1,7 +1,8 @@
 import {
   RECORD_ADDRESS,
   ADD_CART,
-  REDUCE_CART
+  REDUCE_CART,
+  CLEAR_CART
 } from './mutation-type.js'
 
 import {
@@ -62,5 +63,11 @@ export default {
         item[food_id] = null;
       }
     }
+  },
+
+  [CLEAR_CART](state, shopId){
+    state.cartList[shopId] = null;
+    state.cartList = {...state.cartList};
+    setStore('buyCart', state.cartList);
   }
 }
