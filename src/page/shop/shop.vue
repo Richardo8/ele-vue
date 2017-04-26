@@ -87,7 +87,7 @@
                       <strong class="menu_item_title">{{item.name}}</strong>
                       <span class="menu_item_description">{{item.description}}</span>
                     </section>
-                    <span class="menu_detail_header_right"></span>
+                    <span class="menu_detail_header_right" @click="showTitleDetail(index)"></span>
                     <p v-if="index == TitleDetailIndex" class="description_tip">
                       <span>{{item.name}}</span>
                       {{item.description}}
@@ -318,7 +318,7 @@ export default {
             foodList: null, // 视频列表
             ratingList: null, // 评价列表
             menuIndex: 0, // 菜单左侧栏位置
-            TitleDetailIndex: null, //
+            TitleDetailIndex: null, // 点击展示列表头部详情
             foodScroll: null, // 视频列表scroll
             shopListTop: [],
             menuIndexChange: true,
@@ -584,6 +584,13 @@ export default {
                 clearTimeout(this.timer);
                 this.showDeleteTip = false;
             }, 3000)
+        },
+        showTitleDetail(index){
+            if(this.TitleDetailIndex == index){
+                this.TitleDetailIndex = null;
+            }else{
+                this.TitleDetailIndex = index;
+            }
         }
     },
     watch: {
