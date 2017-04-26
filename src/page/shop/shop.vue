@@ -123,7 +123,7 @@
                         <span>{{foods.specfoods[0].price}}</span>
                         <span v-if="foods.specifications.length">起</span>
                       </section>
-                      <buy-cart :shopId="shopId" :foods="foods" @showMoveDot="showMoveDotFun"></buy-cart>
+                      <buy-cart :shopId="shopId" :foods="foods" @showMoveDot="showMoveDotFun" @showChooseList="showChooseList" @showReduceTip="showReduceTip"></buy-cart>
                     </footer>
                   </section>
                 </li>
@@ -255,6 +255,40 @@
         </section>
       </transition>
     </section>
+    <section>
+      <transition name="fade">
+        <div class="specs_cover" @click="showChooseList" v-if="showSpecs"></div>
+      </transition>
+      <transition name="fadeBounce">
+        <div class="specs_list" v-if="showSpecs">
+          <header class="specs_list_header">
+            <h4 class="ellipsis">{{chosenFoods.name}}</h4>
+            <svg width="16" height="16" xmlns="http://www.w3.org/2000/svg" version="1.1" class="specs_cancel" @click="showChooseList">
+              <line x1="0" y1="0" x2="16" y2="16"  stroke="#666" stroke-width="1.2"/>
+              <line x1="0" y1="16" x2="16" y2="0"  stroke="#666" stroke-width="1.2"/>
+            </svg>
+          </header>
+          <section class="specs_details">
+            <h5 class="specs_details_title">{{chosenFoods.specifications[0].name}}</h5>
+            <ul>
+              <li v-for="(item, itemIndex) in chosenFoods.specifications[0].values" :class="{specs_activity: itemIndex == specsIndex}" @click="chooseSpecs(itemIndex)">
+                {{item}}
+              </li>
+            </ul>
+          </section>
+          <footer class="specs_footer">
+            <div class="specs_price">
+              <span>￥ </span>
+              <span>{{chosenFoods.specfoods[specsIndex].price}}</span>
+            </div>
+            <div class="specs_addto_cart" @click="addSpecs(chosenFoods.category_id, chosenFoods.item_id, chosenFoods.specfoods[specsIndex].food_id, chosenFoods.specfoods[specsIndex].name, chosenFoods.specfoods[specsIndex].price, chosenFoods.specifications[0].values[specsIndex], chosenFoods.specfoods[specsIndex].packing_fee, chosenFoods.specfoods[specsIndex].sku_id, chosenFoods.specfoods[specsIndex].stock)">加入购物车</div>
+          </footer>
+        </div>
+      </transition>
+    </section>
+    <transition name="fade">
+      <p class="show_delete_tip" v-if="showDeleteTip">多规格商品只能去购物车删除哦</p>
+    </transition>
     <transition appear @after-appear="afterEnter" @before-appear="beforeEnter" v-for="(item,index) in showMoveDot" :key="index">
       <span class="move_dot" v-if="item">
         <svg class="move_liner">
@@ -285,7 +319,7 @@ export default {
             ratingList: null, // 评价列表
             menuIndex: 0, // 菜单左侧栏位置
             TitleDetailIndex: null, //
-            foodScroll: null,
+            foodScroll: null, // 视频列表scroll
             shopListTop: [],
             menuIndexChange: true,
             showActivities: false,
@@ -306,6 +340,10 @@ export default {
             elLeft: 0, //当前点击家按钮在网页中的绝对top值
             elBottom: 0, //当前点击加按钮在网页中的绝对left值
             windowHeight: null, //屏幕的高度
+            showSpecs: false, // 控制显示食品规格
+            specsIndex: 0, // 当前选中的规格索引值
+            chosenFoods: null, // 当前选中的食品数据，
+            showDeleteTip: false, // 多规格商品点击减，弹出提示框,
         }
     },
     created(){
@@ -483,6 +521,8 @@ export default {
         },
         removeOutCart(category_id, item_id, food_id, name, price, specs){
             this.REDUCE_CART({shopId: this.shopId, category_id, item_id, food_id, name, price, specs})
+          console.log(this.cartFoodList.length)
+          console.log(this.showCartList)
         },
         clearCart(){
             this.toggleCartList();
@@ -522,6 +562,28 @@ export default {
             el.children[0].addEventListener('webkitAnimationEnd', () => {
               this.listenInCart();
             })
+        },
+        showChooseList(foods){
+            if(foods){
+                this.chosenFoods = foods;
+            }
+            this.showSpecs = !this.showSpecs;
+            this.specsIndex = 0;
+        },
+        chooseSpecs(index){
+            this.specsIndex = index;
+        },
+        addSpecs(category_id, item_id, food_id, name, price, specs, packing_fee, sku_id, stock){
+            this.ADD_CART({shopId: this.shopId, category_id, item_id, food_id, name, price, specs, packing_fee, sku_id, stock});
+            this.showChooseList();
+        },
+        showReduceTip(){
+            this.showDeleteTip = true;
+            clearTimeout(this.timer);
+            this.timer = setTimeout(() => {
+                clearTimeout(this.timer);
+                this.showDeleteTip = false;
+            }, 3000)
         }
     },
     watch: {
@@ -1159,6 +1221,108 @@ export default {
       fill: #3190e8;
     }
   }
+
+  /*多规格商品样式*/
+  .specs_list{
+    position: fixed;
+    top: 35%;
+    left: 15%;
+    width: 70%;
+    background-color: #fff;
+    z-index: 18;
+    border: 1px;
+    border-radius: 0.2rem;
+    .specs_list_header{
+      h4{
+        @include sc(.7rem, #222);
+        font-weight: normal;
+        text-align: center;
+        padding: .5rem;
+      }
+      .specs_cancel{
+        position: absolute;
+        right: .5rem;
+        top: .5rem;
+      }
+    }
+    .specs_details{
+      padding: .5rem;
+      .specs_details_title{
+        @include sc(.6rem, #666);
+      }
+      ul{
+        display: flex;
+        flex-wrap: wrap;
+        padding: .4rem 0;
+        li{
+          font-size: .6rem;
+          padding: .3rem .5rem;
+          border: 0.025rem solid #ddd;
+          border-radius: .2rem;
+          margin-right: .5rem;
+        }
+        .specs_activity{
+          border-color: #3199e8;
+          color: #3199e8;
+        }
+      }
+    }
+    .specs_footer{
+      @include fj;
+      align-items: center;
+      background-color: #f9f9f9;
+      padding: 0.5rem;
+      border: 1px;
+      border-bottom-left-radius: .2rem;
+      border-bottom-right-radius: .2rem;
+      .specs_price{
+        span{
+          color: #ff6000;
+        }
+        span:nth-of-type(1){
+          font-size: .5rem;
+        }
+        span:nth-of-type(2){
+          font-size: .8rem;
+          font-weight: bold;
+          font-family: Helvetica Neue,Tahoma;
+        }
+      }
+      .specs_addto_cart{
+        @include wh(4rem, 1.3rem);
+        background-color: #3199e8;
+        border: 1px;
+        border-radius: 0.15rem;
+        @include sc(.6rem, #fff);
+        text-align: center;
+        line-height: 1.3rem;
+      }
+    }
+  }
+  .show_delete_tip{
+    position: fixed;
+    top: 50%;
+    left: 15%;
+    width: 70%;
+    transform: translateY(-50%);
+    background-color: rgba(0,0,0,.8);
+    z-index: 18;
+    @include sc(.65rem, #fff);
+    text-align: center;
+    padding: .5rem 0;
+    border: 1px;
+    border-radius: 0.25rem;
+  }
+  .specs_cover{
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0,0,0,.4);
+    z-index: 17;
+  }
+
 
   /*rating*/
   .rating_container{

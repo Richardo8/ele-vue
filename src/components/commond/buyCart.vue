@@ -18,14 +18,14 @@
     <section v-else class="choose_specification">
       <section class="choose_icon_container">
         <transition name="showReduce">
-          <svg class="specs_reduce_icon" v-if="foodNum">
+          <svg class="specs_reduce_icon" v-if="foodNum" @click="showReduceTip">
             <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#cart-minus"></use>
           </svg>
         </transition>
         <transition name="fade">
           <span class="cart_num" v-if="foodNum">{{foodNum}}</span>
         </transition>
-        <span class="show_chooselist">选规格</span>
+        <span class="show_chooselist" @click="showChooseList(foods)">选规格</span>
       </section>
     </section>
   </section>
@@ -79,6 +79,12 @@
             if(this.foodNum > 0){
                 this.REDUCE_CART({shopId: this.shopId, category_id, item_id, food_id, name, price, specs, packing_fee, sku_id, stock})
             }
+        },
+        showChooseList(foodScroll){
+            this.$emit('showChooseList', foodScroll);
+        },
+        showReduceTip(){
+            this.$emit('showReduceTip')
         }
       }
   }
