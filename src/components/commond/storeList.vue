@@ -1,7 +1,7 @@
 <template>
   <div class="shopList_container">
     <ul v-load-more="loadMoreRes" v-loading.fullscreen.lock="isLoading" element-loading-text="拼命加载中">
-      <router-link :to="{path: 'shop', query:{geohash, id: item.id}}" v-for="item in shopListArr" tag="li" :key="item.id" class="shop_li">
+      <router-link :to="{path: '/shop', query:{geohash, id: item.id}}" v-for="item in shopListArr" tag="li" :key="item.id" class="shop_li">
         <section>
           <img :src="getPicUrl(item.image_path)" class="shop_img">
         </section>
