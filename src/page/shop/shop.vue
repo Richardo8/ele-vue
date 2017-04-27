@@ -296,6 +296,9 @@
         </svg>
       </span>
     </transition>
+    <transition name="router-slid" mode="out-in">
+      <router-view></router-view>
+    </transition>
   </div>
 </template>
 
@@ -393,7 +396,7 @@ export default {
     },
     methods: {
         ...mapMutations([
-            'RECORD_ADDRESS', 'ADD_CART', 'REDUCE_CART', 'CLEAR_CART'
+            'RECORD_ADDRESS', 'ADD_CART', 'REDUCE_CART', 'CLEAR_CART', 'RECORD_SHOPDETAIL'
         ]),
         async initData(){
           if(!this.latitued){
@@ -401,10 +404,12 @@ export default {
                 this.RECORD_ADDRESS(res);
             }
             this.shopDetailData = await getShopDetails(this.shopId, this.latitude, this.longitude);
+            console.log(this.shopDetailData)
             this.foodList = await getFoodList(this.shopId);
             this.ratingList = await getRatingList(this.shopId, this.ratingOffset);
             this.ratingScoresData = await getRatingScores(this.shopId);
-            this.ratingTagsList = await getRatingTagList(this.shopId)
+            this.ratingTagsList = await getRatingTagList(this.shopId);
+            this.RECORD_SHOPDETAIL(this.shopDetailData);
             this.isLoading = false;
         },
         getFoodListHeight(){
@@ -1491,7 +1496,13 @@ export default {
   .fade-choose-enter, .fade-choose-leave-active {
     opacity: 0;
   }
-
+  .router-slid-enter-active, .router-slid-leave-active {
+    transition: all .4s;
+  }
+  .router-slid-enter, .router-slid-leave-active {
+    transform: translate3d(2rem, 0, 0);
+    opacity: 0;
+  }
   .toggle-cart-enter-active, .toggle-cart-leave-active {
     transition: all .3s ease-out;
   }

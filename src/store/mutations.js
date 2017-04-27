@@ -2,7 +2,8 @@ import {
   RECORD_ADDRESS,
   ADD_CART,
   REDUCE_CART,
-  CLEAR_CART
+  CLEAR_CART,
+  RECORD_SHOPDETAIL
 } from './mutation-type.js'
 
 import {
@@ -69,5 +70,9 @@ export default {
     state.cartList[shopId] = null;
     state.cartList = {...state.cartList};
     setStore('buyCart', state.cartList);
+  },
+
+  [RECORD_SHOPDETAIL](state, detail){
+    state.shopDetail = detail;
   }
 }
