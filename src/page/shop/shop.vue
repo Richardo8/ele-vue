@@ -396,7 +396,7 @@ export default {
             'RECORD_ADDRESS', 'ADD_CART', 'REDUCE_CART', 'CLEAR_CART'
         ]),
         async initData(){
-            if(!this.latitued){
+          if(!this.latitued){
                 let res = await msiteAdress(this.geohash)
                 this.RECORD_ADDRESS(res);
             }
