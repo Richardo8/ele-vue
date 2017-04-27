@@ -4,6 +4,7 @@ import storeList from '@/components/commond/storeList'
 import msite from '@/page/msite/msite'
 import shop from '@/page/shop/shop'
 import shopDetail from '@/page/shop/children/shopDetail'
+import shopSafe from '@/page/shop/children/children/shopSafe'
 
 
 Vue.use(Router)
@@ -26,6 +27,10 @@ export default new Router({
       children: [{
         path: 'shopDetail',
         component: shopDetail,
+        children: [{
+          path: 'shopSafe',
+          component: shopSafe,
+        }]
       }]
     },
     {
