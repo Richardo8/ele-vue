@@ -404,7 +404,6 @@ export default {
                 this.RECORD_ADDRESS(res);
             }
             this.shopDetailData = await getShopDetails(this.shopId, this.latitude, this.longitude);
-            console.log(this.shopDetailData)
             this.foodList = await getFoodList(this.shopId);
             this.ratingList = await getRatingList(this.shopId, this.ratingOffset);
             this.ratingScoresData = await getRatingScores(this.shopId);

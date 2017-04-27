@@ -53,13 +53,13 @@
       <p>{{shopDetail.name}}</p>
       <p>地址：{{shopDetail.address}}</p>
       <p>营业时间：[{{shopDetail.opening_hours[0]}}]</p>
-      <p @click="showLicenseImg(shopDetail.license.business_license_image)">
+      <p @click="LicenseImg(shopDetail.license.business_license_image)">
         <span>营业执照</span>
         <svg width="14" height="14" xmlns="http://www.w3.org/2000/svg" version="1.1" class="description_arrow" >
           <path d="M0 0 L8 7 L0 14"  stroke="#bbb" stroke-width="1.5" fill="none"/>
         </svg>
       </p>
-      <p @click="showLicenseImg(shopDetail.license.catering_service_license_image)">
+      <p @click="LicenseImg(shopDetail.license.catering_service_license_image)">
         <span>餐饮服务许可证</span>
         <svg width="14" height="14" xmlns="http://www.w3.org/2000/svg" version="1.1" class="description_arrow" >
           <path d="M0 0 L8 7 L0 14"  stroke="#bbb" stroke-width="1.5" fill="none"/>
@@ -90,7 +90,6 @@
           }
       },
       mounted(){
-        console.log(this.shopDetail);
       },
       computed: {
         ...mapState([
@@ -102,7 +101,7 @@
       },
       mixins: [getPicUrl],
       methods: {
-          showLicenseImg(img){
+          LicenseImg(img){
               this.licenseImg = img;
               this.showLicenseImg = true;
           }
