@@ -4,9 +4,9 @@
     <div class="head_login">
       <span class="login_span">登录|注册</span>
     </div>
-    <!--<section class="title_head ellipsis">-->
-      <!--<span class="title_text">{{headTitle}}</span>-->
-    <!--</section>-->
+    <section class="title_head ellipsis">
+      <span class="title_text">{{headTitle}}</span>
+    </section>
     <slot name="msite-title"></slot>
   </header>
 </template>
@@ -15,7 +15,8 @@
   export default {
       data(){
           return {}
-      }
+      },
+      props: ['headTitle']
   }
 </script>
 
