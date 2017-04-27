@@ -94,7 +94,7 @@
                     </p>
                   </header>
                   <section v-for="(foods, foodIndex) in item.foods" :key="foodIndex" class="menu_detail_list">
-                    <router-link to="{path: 'shop/foodDetail', query:{image_path:foods.image_path, description: foods.description, month_sales: foods.month_sales, name: foods.name, rating: foods.rating, rating_count: foods.rating_count, satisfy_rate: foods.satisfy_rate, foods, shopId}}" tag="div" class="menu_detail_link">
+                    <router-link :to="{path: '/shop/foodDetail', query:{image_path:foods.image_path, description: foods.description, month_sales: foods.month_sales, name: foods.name, rating: foods.rating, rating_count: foods.rating_count, satisfy_rate: foods.satisfy_rate, foods, shopId}}" tag="div" class="menu_detail_link">
                       <section class="menu_food_img">
                         <img :src="getPicUrl(foods.image_path)">
                       </section>
